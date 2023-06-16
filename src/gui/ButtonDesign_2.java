@@ -10,6 +10,12 @@ public class ButtonDesign_2 extends ButtonDesign{
         super();
     }
     public ButtonDesign_2(Color colour, int number){
-        super(colour, number);
+        super(colour);
+        this.setText(Integer.toString(number));
+    }
+
+    public void updateColour(Color color, int number){
+        this.setBackground(color);
+        this.setText(Integer.toString(number));
     }
 }

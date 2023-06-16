@@ -15,7 +15,7 @@ public class Frame extends JFrame {
         super("Yusuf's Game");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(600, 600);
-        setMinimumSize(new Dimension(600, 450));
+        setMinimumSize(new Dimension(590, 450));
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 

@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class ButtonDesign extends JButton {
+    Color colour;
     public ButtonDesign(String text) {
         super(text);
 /*        this.setFont(new Font("Times New Roman", Font.BOLD, 14));
@@ -15,8 +16,14 @@ public class ButtonDesign extends JButton {
         super();
     }
 
-    public ButtonDesign(Color colour, int number){
-        super(Integer.toString(number));
+    public ButtonDesign(Color colour){
+        this.setBackground(colour);
+        this.colour = colour;
+
+    }
+
+    public void updateColour(Color colour){
+        this.colour = colour;
         this.setBackground(colour);
     }
 }

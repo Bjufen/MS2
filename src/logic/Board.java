@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Board {
 
@@ -15,6 +16,7 @@ public class Board {
 
     private Component s1, s2;
     private Set<Component> components;
+    private Set<Color> colourSet;
     private boolean s1Turn;
 
 
@@ -22,6 +24,7 @@ public class Board {
         this.aColors = aColors;
         this.aRows = aRows;
         this.aColumns = aColumns;
+        setColourSet();
         setAmountofColors(aColors);
         createBoard();
         components = new HashSet<>();
@@ -30,9 +33,13 @@ public class Board {
     }
 
     public Board(Field[][] initBoard) {
+        setColourSet();
         setAmountofColors(getAllColorsBoard().length);
         components = new HashSet<>();
         setMidGameComponents();
+        setaColors(colors.length);
+        setaRows(initBoard.length);
+        setaColumns(initBoard[0].length);
     }
 
 
@@ -72,6 +79,9 @@ public class Board {
                 }
                 fields.addAll(newFields);
                 component.setComponent(fields);
+                for (Field field1 : component.getComponent()){
+                    field1.setComponent(component);
+                }
                 components.add(component);
             }
         }
@@ -84,10 +94,18 @@ public class Board {
             if (component.getComponent().contains(getBoard()[getBoard().length - 1][0])) {
                 s1 = component;
                 components.remove(component);
+                break;
+            }
+            for(Field field : s1.getComponent()){
+                field.setComponent(s1);
             }
             if (component.getComponent().contains(getBoard()[0][getBoard()[0].length - 1])) {
                 s2 = component;
                 components.remove(component);
+                break;
+            }
+            for(Field field : s2.getComponent()){
+                field.setComponent(s2);
             }
         }
     }
@@ -166,13 +184,46 @@ public class Board {
     }
 
     public void setAmountofColors(int amountofColors) {
+        Color[] temp = new Color[colourSet.size()];
         colors = new Color[amountofColors];
-        for (int i = 0; i < colors.length; i++) {
-            Random random = new Random();
-            int red = random.nextInt(256);
-            int green = random.nextInt(256);
-            int blue = random.nextInt(256);
-            colors[i] = new Color(red, green, blue);
+        Set<Color> usedColours = new HashSet<>();
+        Random random = new Random();
+        int randomNumber = random.nextInt(colourSet.size());
+        Iterator<Color> iterator = colourSet.iterator();
+        for (int i = 0; i < temp.length; i++) {
+            Color selectedColour = iterator.next();
+            while (usedColours.contains(selectedColour)){
+                selectedColour = iterator.next();
+            }
+            temp[i] = selectedColour;
+            usedColours.add(selectedColour);
+        }
+        shuffle(temp);
+        colors = java.util.Arrays.copyOfRange(temp, 0, amountofColors);
+    }
+
+    private void setColourSet(){
+        colourSet = new HashSet<>();
+        colourSet.add(Color.GREEN);
+        colourSet.add(Color.RED);
+        colourSet.add(Color.MAGENTA);
+        colourSet.add(Color.BLUE);
+        colourSet.add(Color.YELLOW);
+        colourSet.add(Color.CYAN);
+        colourSet.add(Color.PINK);
+        colourSet.add(Color.ORANGE);
+        colourSet.add(new Color(160,32,240));
+    }
+
+    private void shuffle(Color[] array){
+        Random rnd = ThreadLocalRandom.current();
+        for (int i = array.length - 1; i > 0; i--)
+        {
+            int index = rnd.nextInt(i + 1);
+            // Simple swap
+            Color a = array[index];
+            array[index] = array[i];
+            array[i] = a;
         }
     }
 
