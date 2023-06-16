@@ -1,3 +1,4 @@
+//Yusuf Shehadeh, 7395116
 package logic;
 
 /*
@@ -9,14 +10,16 @@ public class Field {
 	private int color;
 	private int row;
 	private int col;
+
+	private Component component;
 	
 	public Field(int row, int col, int color) {
 		this.row = row; 
 		this.col = col; 
 		this.color = color;  
-	
-	
 	}
+
+	public Field(){}
 
 	
 	
@@ -48,6 +51,11 @@ public class Field {
 		this.col = col;
 	}
 
-	
+	public Component getComponent() {
+		return component;
+	}
 
+	public void setComponent(Component component) {
+		this.component = component;
+	}
 }
