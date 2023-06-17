@@ -2,10 +2,7 @@ package logic;
 
 
 import java.awt.*;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Board {
@@ -33,8 +30,12 @@ public class Board {
     }
 
     public Board(Field[][] initBoard) {
+        board = initBoard;
         setColourSet();
-        setAmountofColors(getAllColorsBoard().length);
+        this.aRows = initBoard.length;
+        this.aColumns = initBoard[0].length;
+        this.aColors = getAllColorsBoard().length;
+        setAmountofColors(aColors);
         components = new HashSet<>();
         setMidGameComponents();
         setaColors(colors.length);
@@ -89,26 +90,52 @@ public class Board {
     }
 
 
-    private void setPlayerComponents() {
+/*    private void setPlayerComponents() {
         for (Component component : components) {
             if (component.getComponent().contains(getBoard()[getBoard().length - 1][0])) {
                 s1 = component;
                 components.remove(component);
-                break;
-            }
-            for(Field field : s1.getComponent()){
-                field.setComponent(s1);
+                for(Field field : s1.getComponent()){
+                    field.setComponent(s1);
+                }
+                continue;
             }
             if (component.getComponent().contains(getBoard()[0][getBoard()[0].length - 1])) {
                 s2 = component;
                 components.remove(component);
-                break;
-            }
-            for(Field field : s2.getComponent()){
-                field.setComponent(s2);
+                for(Field field : s2.getComponent()){
+                    field.setComponent(s2);
+                }
+                continue;
             }
         }
+    }*/
+private void setPlayerComponents() {
+    Iterator<Component> componentIterator = components.iterator();
+
+    while (componentIterator.hasNext()) {
+        Component component = componentIterator.next();
+
+        if (component.getComponent().contains(getBoard()[getBoard().length - 1][0])) {
+            s1 = component;
+            componentIterator.remove();  // Safe removal
+            for (Field field : s1.getComponent()) {
+                field.setComponent(s1);
+            }
+            continue;
+        }
+
+        if (component.getComponent().contains(getBoard()[0][getBoard()[0].length - 1])) {
+            s2 = component;
+            componentIterator.remove();  // Safe removal
+            for (Field field : s2.getComponent()) {
+                field.setComponent(s2);
+            }
+            continue;
+        }
     }
+}
+
 
     private void setStartComponents() {
         s1 = new Component(getBoard()[getBoard().length - 1][0]);
@@ -131,7 +158,7 @@ public class Board {
         this.setS1Turn(!isS1Turn());
     }
 
-    public int predictSizeChange(Component player, int color) {
+    /*public int predictSizeChange(Component player, int color) {
         Board copy = new Board(this.getBoard());
         int originalSize = player.getSize();
         int newSize;
@@ -143,8 +170,31 @@ public class Board {
             newSize = copy.getS2().getSize();
         }
         return newSize - originalSize;
-    }
+    }*/
 
+    private Field[][] getCopyOfBoard(){
+        Field[][] copy = new Field[this.getBoard().length][];
+        for (int i = 0; i < this.getBoard().length; i++) {
+            copy[i] = Arrays.copyOf(this.getBoard()[i], this.getBoard()[i].length);
+        }
+        return copy;
+    }
+    public int predictSizeChangeS1(int color) {
+        Board copy = new Board(getCopyOfBoard());
+        int originalSize = getS1().getSize();
+        int newSize;
+        copy.makeTurnSinglePlayer(getS1(), color);
+        newSize = copy.getS1().getSize();
+        return newSize - originalSize;
+    }
+    public int predictSizeChangeS2(int color) {
+        Board copy = new Board(getCopyOfBoard());
+        int originalSize = getS2().getSize();
+        int newSize;
+        copy.makeTurnSinglePlayer(getS2(), color);
+        newSize = copy.getS2().getSize();
+        return newSize - originalSize;
+    }
     public Set<Component> getAllNeighboringComponents(Component component) {
         Set<Component> neighbouringComponents = new HashSet<>();
         for (Field field : component.getComponent()) {
@@ -250,8 +300,14 @@ public class Board {
     //Not sure if all colours have to be present with this method but assuming it because it is supposed to
     private void fillBoard() {
         Random random = new Random();
+        int counter = 0;
         for (int i = 0; i < getaRows(); i++) {
             for (int j = 0; j < getaColumns(); j++) {
+                if(counter < aColors) {
+                    board[i][j] = new Field(i, j, counter);
+                    counter++;
+                    continue;
+                }
                 board[i][j] = new Field(i, j, getRandomDistinctColor(i, j, random));
             }
         }
@@ -289,48 +345,112 @@ public class Board {
                 return false;
         } catch (NullPointerException ignored) {
         }
+        if(row == board.length - 1 && col == 0){
+            return value != board[0][board[0].length - 1].getColor();
+        }
         return true;
     }
 
 
     public int strategy(int strategy) {
-        int bestColour = this.getAllColorsBoard()[0];
-        int[] allColorsBoard = this.getAllColorsBoard();
-        for (int i = 1; i < allColorsBoard.length; i++) {
+        int[] availableColours = copyExcluding(this.getAllColorsBoard(),getS1().getColor(), getS2().getColor());
+        int bestColour = availableColours[0];
+        for (int i = 1; i < availableColours.length; i++) {
+            System.out.println("Best colour before for loop: " + bestColour);
+            System.out.println("New colour before for loop: " + availableColours[i]);
             bestColour = switch (strategy) {
-                case 1 -> strategy1(bestColour, allColorsBoard[i]);
-                case 2 -> strategy2(bestColour, allColorsBoard[i]);
-                default -> strategy3(bestColour, allColorsBoard[i]);
+                case 1 -> strategy1(bestColour, availableColours[i]);
+                case 2 -> strategy2(bestColour, availableColours[i]);
+                default -> strategy3(bestColour, availableColours[i]);
             };
+            System.out.println("BestColour after for loop: " + bestColour);
         }
+        System.out.println("BestColour: " + bestColour);
         return bestColour;
     }
 
     private int strategy1(int bestColor, int newColor) {
-        int bestC = predictSizeChange(s2, bestColor);
-        int newC = predictSizeChange(s2, newColor);
+        int bestC = predictSizeChangeS2(bestColor);
+        int newC = predictSizeChangeS2(newColor);
+        System.out.println("SizeChange(S2) with bestColor: " + bestC);
+        System.out.println("SizeChange(S2) with newColor: " + newC);
         if (bestC == newC) {
             return Math.min(bestColor, newColor);
         }
-        return Math.min(bestC, newC);
+        if (Math.min(bestC, newC) == bestC)
+            return bestColor;
+        else return newColor;
     }
 
     private int strategy2(int bestColor, int newColor) {
-        return strategyHelper(bestColor, newColor, this.getS1());
+        int bestC = predictSizeChangeS2(bestColor);
+        int newC = predictSizeChangeS2(newColor);
+        System.out.println("SizeChange(S2) with bestColor: " + bestC);
+        System.out.println("SizeChange(S2) with newColor: " + newC);
+        if (bestC == newC) {
+            return Math.min(bestColor, newColor);
+        }
+        if (Math.max(bestC, newC) == bestC)
+            return bestColor;
+        else return newColor;
     }
 
     private int strategy3(int bestColor, int newColor) {
-        return strategyHelper(bestColor, newColor, this.getS1());
+        int bestC = predictSizeChangeS1(bestColor);
+        int newC = predictSizeChangeS1(newColor);
+        System.out.println("SizeChange(S1) with bestColor: " + bestC);
+        System.out.println("SizeChange(S1) with newColor: " + newC);
+        if (bestC == newC) {
+            return Math.min(bestColor, newColor);
+        }
+        if (Math.max(bestC, newC) == bestC)
+            return bestColor;
+        else return newColor;
     }
 
-    private int strategyHelper(int bestColor, int newColor, Component s) {
+   /* private int strategyHelper(int bestColor, int newColor, Component s) {
         int bestC = predictSizeChange(s, bestColor);
         int newC = predictSizeChange(s, newColor);
         if (bestC == newC) {
             return Math.min(bestColor, newColor);
         }
         return Math.max(bestC, newC);
+    }*/
+
+    public int[] copyExcluding(int[] original, int excludeValue1, int excludeValue2) {
+        int[] copy = new int[original.length - 2];  // Create a new array that's two elements shorter
+            System.out.println("Array i: " + java.util.Arrays.toString(original));
+            System.out.println("Array j: " + java.util.Arrays.toString(copy));
+        int j = 0;
+        for (int i = 0; i < original.length; i++) {
+            System.out.println("Start of for loop" +
+                    "\ni: " + i +
+                    "\nj: " + j +
+                    "\nOriginal value of index i = " + i + ": " + original[i] +
+                    "\n");
+            System.out.println("Array i: " + java.util.Arrays.toString(original));
+            System.out.println("Array j: " + java.util.Arrays.toString(copy) + "\n");
+            // Skip over the values that we're excluding
+            if (original[i] == excludeValue1 || original[i] == excludeValue2) {
+                System.out.println("if clause true\n");
+                System.out.println("Array i: " + java.util.Arrays.toString(original));
+                System.out.println("Array j: " + java.util.Arrays.toString(copy) + "\n");
+                continue;
+            }
+            // Copy over the element
+            System.out.println("Element to be added to copy: " + original[i]);
+            copy[j] = original[i];
+            j++;
+            System.out.println("if clause false" +
+                    "\nCopy value at index j = " + (j - 1) + ": " +  copy[j-1] + "\n");
+            System.out.println("Array i: " + java.util.Arrays.toString(original));
+            System.out.println("Array j: " + java.util.Arrays.toString(copy) + "\n");
+        }
+         System.out.println("Copy:" + java.util.Arrays.toString(copy));
+        return copy;
     }
+
+
 
 
     private void updateBoard() {

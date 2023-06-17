@@ -3,8 +3,7 @@ package gui;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
+import java.awt.event.*;
 
 public class Frame extends JFrame {
     private DisplayPanel displayPanel;
@@ -15,7 +14,7 @@ public class Frame extends JFrame {
         super("Yusuf's Game");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(600, 600);
-        setMinimumSize(new Dimension(590, 450));
+        setMinimumSize(new Dimension(595, 450));
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
@@ -25,14 +24,16 @@ public class Frame extends JFrame {
 
         add(displayPanel, BorderLayout.CENTER);
         add(menuPanel, BorderLayout.EAST);
+
         this.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
                 displayPanel.resize();
             }
         });
-
         setVisible(true);
     }
+
+
 
 }

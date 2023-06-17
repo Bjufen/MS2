@@ -137,7 +137,7 @@ public class MenuPanel extends JPanel {
                             "\n#Colours: " + colours.getSelectedItem() +
                             "\n#Rows: " + rows.getSelectedItem() +
                             "\n#Columns: " + cols.getSelectedItem() +
-                            "\nChosen Strategy: " + getStrategy());
+                            "\nChosen Strategy: " + getStrategy() + "\n");
                 } else {
                     if (!playPause.getText().equals("Play"))
                         playPause.setText("Play");
@@ -148,6 +148,7 @@ public class MenuPanel extends JPanel {
                     //removeGame()
                     playPause.setEnabled(false);
                     enableAllOptions();
+                    displayPanel.setEnabledGame(false);
                 }
             }
         });
@@ -161,12 +162,17 @@ public class MenuPanel extends JPanel {
                     playPause.setText("Pause");
                     timer.start();
                     disableAllOptions();
-                    //startGame()
+                    displayPanel.setEnabledGame(true);
+                    displayPanel.setEnabledPlayercolours(false);
+                    displayPanel.setStrategy(getStrategy());
+                    if (getStarter() == 2){
+                        displayPanel.s2Move();
+                    }
                 } else {
                     playPause.setText("Play");
                     timer.stop();
                     enableAllOptions();
-                    //pauseGame
+                    displayPanel.setEnabledGame(false);
                 }
             }
         });
