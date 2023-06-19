@@ -176,10 +176,12 @@ public class DisplayPanel extends JPanel {
         reloadBottomPanel();
         setEnabledPlayercolours(false);
         reloadTopPanel();
+        setEnabledGame(false);
         checkDone();
     }
 
     public void s2Move() {
+        setEnabledGame(true);
         if (menuPanel.isGameStarted()) {
             setEnabledPlayercolours(true);
             board.makeTurnSinglePlayer(board.getS2(), board.strategy(getStrategy()));
