@@ -4,6 +4,7 @@ import java.awt.*;
 
 public class ButtonDesign_2 extends ButtonDesign{
     private int number;
+    private Color color;
     public ButtonDesign_2(String text) {
         super(text);
     }
@@ -14,6 +15,7 @@ public class ButtonDesign_2 extends ButtonDesign{
         super(colour);
         this.setText(Integer.toString(number));
         setNumber(number);
+        this.color = colour;
     }
 
     public void updateColour(Color color, int number){
@@ -28,5 +30,10 @@ public class ButtonDesign_2 extends ButtonDesign{
 
     public void setNumber(int number) {
         this.number = number;
+    }
+
+    @Override
+    public String toString() {
+        return "Number: " + getNumber() + " Color: " + color;
     }
 }

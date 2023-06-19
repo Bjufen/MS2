@@ -50,4 +50,9 @@ public class Component {
     public void setColor(int color) {
         this.color = color;
     }
+
+    @Override
+    public String toString() {
+        return "component=" + component +'}';
+    }
 }

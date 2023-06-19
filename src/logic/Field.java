@@ -58,4 +58,13 @@ public class Field {
 	public void setComponent(Component component) {
 		this.component = component;
 	}
+
+	@Override
+	public String toString() {
+		return "Field{" +
+				"color=" + color +
+				", row=" + row +
+				", col=" + col +
+				'}';
+	}
 }

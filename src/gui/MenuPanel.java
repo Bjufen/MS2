@@ -19,11 +19,42 @@ public class MenuPanel extends JPanel {
     private JComboBox<Integer> rows, cols, colours;
     private Integer[] val4To9 = {4, 5, 6, 7, 8, 9};
     private Integer[] val3To10 = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    private String helpMessage = "";
+    private String helpMessage;
     private Timer timer;
     private int elapsedTime = 0;
+    private boolean gameStarted = false;
+    private boolean s1Started = true;
 
     public MenuPanel(DisplayPanel displayPanel) {
+        setHelpMessage("""
+                SETUP
+                Step one(optional):
+                Alter the Board specs by clicking on the Dropdowns and the Radio Buttons and change the values as you wish.
+                PS: If you do not alter the specs, the board will load with the default specs
+                
+                Step two:
+                Click Start
+                This shows the board. You cannot change the dimensions or the amounts of colours of the board without clicking stop again.
+                There are two ways to do this:
+                1. Change dimensions/#Colors -> Click Stop -> Click Start or
+                2. Click Stop -> Change dimensions/#Colors -> Click Start
+                After you click Start again the board reloads
+                PS: You can still change the starting player and the strategy the computer should use
+                
+                Step three:
+                Click Play
+                Once Play has been clicked you cannot change anything about the board or which player starts now. If you want to change any of those settings, you will have to follow the steps in the bracket of step two.
+                PS: You can Still change the strategy the computer uses this way: Click Stop -> Pick the desired category -> Click Play
+                
+                GAMEPLAY
+                There are three ways to pick a colour:
+                1. Click on a field on the board -> Your component will change to the colour you picked,
+                2. Click on one of the buttons underneath the board -> Your component will change to the colour you picked or
+                3. Press the corresponding key(Numpad also works) -> Your component will change to the colour of the number of the key you pressed
+                PS: You can only pick a colour which is not currently the colour of the components of either player(Player 1(You), Player 2(Computer))
+                
+                Have Fun!\s
+                """);
         this.displayPanel = displayPanel;
         this.setPreferredSize(new Dimension(200, getHeight()));
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -130,10 +161,9 @@ public class MenuPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 if (startStop.getText().equals("Start")) {
                     startStop.setText("Stop");
-                    //loadBoard()
                     playPause.setEnabled(true);
                     displayPanel.start((int) colours.getSelectedItem(), (int) rows.getSelectedItem(), (int) cols.getSelectedItem());
-                    System.out.println("Starting Player: " +getStarter() +
+                    System.out.println("Starting Player: " + getStarter() +
                             "\n#Colours: " + colours.getSelectedItem() +
                             "\n#Rows: " + rows.getSelectedItem() +
                             "\n#Columns: " + cols.getSelectedItem() +
@@ -145,7 +175,6 @@ public class MenuPanel extends JPanel {
                     timer.stop();
                     elapsedTime = 0;
                     timerTitle.setText("00:00:00");
-                    //removeGame()
                     playPause.setEnabled(false);
                     enableAllOptions();
                     displayPanel.setEnabledGame(false);
@@ -159,15 +188,23 @@ public class MenuPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (playPause.getText().equals("Play")) {
+                    setGameStarted(true);
                     playPause.setText("Pause");
                     timer.start();
-                    disableAllOptions();
                     displayPanel.setEnabledGame(true);
                     displayPanel.setEnabledPlayercolours(false);
                     displayPanel.setStrategy(getStrategy());
-                    if (getStarter() == 2){
+                    colours.setSelectedItem(getDisplayPanel().getBoard().getaColors());
+                    rows.setSelectedItem(getDisplayPanel().getBoard().getaRows());
+                    cols.setSelectedItem(getDisplayPanel().getBoard().getaColumns());
+                    if ((getStarter() == 2 && !isGameStarted())) {
                         displayPanel.s2Move();
+                        setS1Started(false);
                     }
+                    if (isS1Started())
+                        player1.doClick();
+                    else player2.doClick();
+                    disableAllOptions();
                 } else {
                     playPause.setText("Play");
                     timer.stop();
@@ -181,13 +218,30 @@ public class MenuPanel extends JPanel {
         this.add(startPlayPanel);
     }
 
+    public void finishGame() {
+        playPause.setText("Play");
+        playPause.setEnabled(false);
+        startStop.setText("Start");
+        timer.stop();
+        enableAllOptions();
+        displayPanel.setEnabledGame(false);
+        elapsedTime = 0;
+        setGameStarted(false);
+        setS1Started(true);
+        endMessage(getDisplayPanel().getBoard().getVictor());
+    }
+
+    public void endMessage(String victor) {
+        JOptionPane.showMessageDialog(this.getParent(), victor);
+    }
+
 
     private int getStarter() {
         ButtonModel selectedModel = players.getSelection();
         return selectedModel == player1.getModel() ? 1 : 2;
     }
 
-    private int getStrategy(){
+    private int getStrategy() {
         ButtonModel selectedModel = strategies.getSelection();
         if (selectedModel == strategy1.getModel())
             return 1;
@@ -460,10 +514,6 @@ public class MenuPanel extends JPanel {
         return helpMessage;
     }
 
-    public void setHelpMessage(String helpMessage) {
-        this.helpMessage = helpMessage;
-    }
-
     public Timer getTimer() {
         return timer;
     }
@@ -486,5 +536,25 @@ public class MenuPanel extends JPanel {
 
     public void setDisplayPanel(DisplayPanel displayPanel) {
         this.displayPanel = displayPanel;
+    }
+
+    public void setHelpMessage(String helpMessage) {
+        this.helpMessage = helpMessage;
+    }
+
+    public boolean isGameStarted() {
+        return gameStarted;
+    }
+
+    public void setGameStarted(boolean gameStarted) {
+        this.gameStarted = gameStarted;
+    }
+
+    public boolean isS1Started() {
+        return s1Started;
+    }
+
+    public void setS1Started(boolean s1Started) {
+        this.s1Started = s1Started;
     }
 }

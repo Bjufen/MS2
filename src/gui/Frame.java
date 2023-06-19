@@ -22,6 +22,8 @@ public class Frame extends JFrame {
 
         menuPanel = new MenuPanel(displayPanel);
 
+        displayPanel.setMenuPanel(menuPanel);
+
         add(displayPanel, BorderLayout.CENTER);
         add(menuPanel, BorderLayout.EAST);
 

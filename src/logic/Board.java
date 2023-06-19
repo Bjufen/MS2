@@ -158,20 +158,6 @@ private void setPlayerComponents() {
         this.setS1Turn(!isS1Turn());
     }
 
-    /*public int predictSizeChange(Component player, int color) {
-        Board copy = new Board(this.getBoard());
-        int originalSize = player.getSize();
-        int newSize;
-        if (player == this.getS1()) {
-            copy.makeTurnSinglePlayer(player, color);
-            newSize = copy.getS1().getSize();
-        } else {
-            copy.makeTurnSinglePlayer(player, color);
-            newSize = copy.getS2().getSize();
-        }
-        return newSize - originalSize;
-    }*/
-
     private Field[][] getCopyOfBoard(){
         Field[][] copy = new Field[this.getBoard().length][];
         for (int i = 0; i < this.getBoard().length; i++) {
@@ -204,6 +190,15 @@ private void setPlayerComponents() {
             }
         }
         return neighbouringComponents;
+    }
+
+    public int getOccurences(Component player, int color){
+        Set<Component> playerNeighbours = new HashSet<>(getAllNeighboringComponents(player));
+        int[] occurrence = new int[getaColors()];
+        for (Component neighbour : playerNeighbours){
+            occurrence[neighbour.getColor()]++;
+        }
+        return occurrence[color];
     }
 
     private Set<Field> getAllNeighbors(Field field) {
@@ -352,8 +347,16 @@ private void setPlayerComponents() {
     }
 
 
+    public int[] getColorValues(){
+        int[] out = new int[aColors];
+        for (int i = 0; i < aColors ; i++) {
+            out[i] = i;
+        }
+        return out;
+    }
+
     public int strategy(int strategy) {
-        int[] availableColours = copyExcluding(this.getAllColorsBoard(),getS1().getColor(), getS2().getColor());
+        int[] availableColours = copyExcluding(getColorValues(),getS1().getColor(), getS2().getColor());
         int bestColour = availableColours[0];
         for (int i = 1; i < availableColours.length; i++) {
             System.out.println("Best colour before for loop: " + bestColour);
@@ -370,8 +373,8 @@ private void setPlayerComponents() {
     }
 
     private int strategy1(int bestColor, int newColor) {
-        int bestC = predictSizeChangeS2(bestColor);
-        int newC = predictSizeChangeS2(newColor);
+        int bestC = getOccurences(s2, bestColor);
+        int newC = getOccurences(s2, newColor);
         System.out.println("SizeChange(S2) with bestColor: " + bestC);
         System.out.println("SizeChange(S2) with newColor: " + newC);
         if (bestC == newC) {
@@ -383,8 +386,8 @@ private void setPlayerComponents() {
     }
 
     private int strategy2(int bestColor, int newColor) {
-        int bestC = predictSizeChangeS2(bestColor);
-        int newC = predictSizeChangeS2(newColor);
+        int bestC = getOccurences(s2, bestColor);
+        int newC = getOccurences(s2, newColor);
         System.out.println("SizeChange(S2) with bestColor: " + bestC);
         System.out.println("SizeChange(S2) with newColor: " + newC);
         if (bestC == newC) {
@@ -396,8 +399,8 @@ private void setPlayerComponents() {
     }
 
     private int strategy3(int bestColor, int newColor) {
-        int bestC = predictSizeChangeS1(bestColor);
-        int newC = predictSizeChangeS1(newColor);
+        int bestC = getOccurences(s1, bestColor);
+        int newC = getOccurences(s1, newColor);
         System.out.println("SizeChange(S1) with bestColor: " + bestC);
         System.out.println("SizeChange(S1) with newColor: " + newC);
         if (bestC == newC) {
@@ -533,5 +536,27 @@ private void setPlayerComponents() {
 
     public void setS1Turn(boolean s1Turn) {
         this.s1Turn = s1Turn;
+    }
+
+    public Set<Color> getColourSet() {
+        return colourSet;
+    }
+
+    public void setColourSet(Set<Color> colourSet) {
+        this.colourSet = colourSet;
+    }
+
+    public boolean isDone() {
+        System.out.println(java.util.Arrays.toString(components.toArray()));
+        return components.size() == 0;
+    }
+
+
+    public String getVictor() {
+        if(s1.getComponent().size() > s2.getComponent().size())
+            return "Player 1 Wins!";
+        else if (s2.getComponent().size() > s1.getComponent().size())
+            return "Player 2 Wins!";
+        else return "Tie!";
     }
 }
