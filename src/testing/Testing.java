@@ -16,18 +16,20 @@ import java.util.Set;
 
 public class Testing {
 
-    private Field[][] board;
+    private final Field[][] board;
     private Board pBoard;
+
+    private final int[] SCHLECHTE_AUFGABENSTELLUNG_WEIL = {1,2,3,4,5,6};
 
 
     public Testing(Field[][] initBoard) {
         this.board = initBoard;
-        pBoard = new Board(initBoard);
+        pBoard = new Board(initBoard,SCHLECHTE_AUFGABENSTELLUNG_WEIL);
 
     }
 
-    public Testing(int aColors, int aRows, int aColumns) {
-        pBoard = new Board(aColors, aRows, aColumns);
+    public Testing(int aRows, int aColumns) {
+        pBoard = new Board(SCHLECHTE_AUFGABENSTELLUNG_WEIL.length, aRows, aColumns);
         this.board = pBoard.getBoard();
     }
 
@@ -39,25 +41,29 @@ public class Testing {
             return false;
         return cornersDifferent();
     }
+
     /*
-    * Was wenn es nur noch zwei Farben aufm Brett, aber die nicht alle zu s1 oder s2 gehören?
-    *
-    * */
+     * Was wenn es nur noch zwei Farben aufm Brett, aber die nicht alle zu s1 oder s2 gehören?
+     *
+     * */
     public boolean isEndConfig() {
-        return pBoard.getAllColorsBoard().length == 2;
+        return pBoard.getAllColorsBoard().length <= 2 && (this.getpBoard().getS1().getSize() + this.getpBoard().getS2().getSize()) == (board.length * board[0].length);
     }
 
 
     public int testStrategy01() {
-        return this.pBoard.strategy(1);
+        SubBoard temp = new SubBoard(board, SCHLECHTE_AUFGABENSTELLUNG_WEIL);
+        return temp.strategies(1, getpBoard().getS2()) ;
     }
 
     public int testStrategy02() {
-        return this.pBoard.strategy(2);
+        SubBoard temp = new SubBoard(board, SCHLECHTE_AUFGABENSTELLUNG_WEIL);
+        return temp.strategies(2,getpBoard().getS2()) ;
     }
 
     public int testStrategy03() {
-        return this.pBoard.strategy(3);
+        SubBoard temp = new SubBoard(board, SCHLECHTE_AUFGABENSTELLUNG_WEIL);
+        return temp.strategies(3, getpBoard().getS1()) ;
     }
 
     //todo
@@ -67,7 +73,7 @@ public class Testing {
         if (this.getBoard()[0].length != anotherBoard[0].length)
             return false;
         if (!this.pBoard.isS1Turn())
-            return  false;
+            return false;
         Board anotherField = new Board(anotherBoard);
         for (int i = 0; i < anotherBoard.length; i++) {
             for (int j = 0; j < anotherBoard[0].length; j++) {
@@ -78,8 +84,8 @@ public class Testing {
             }
         }
         /*
-        * Not final solution
-        * Still needs some adjustments*/
+         * Not final solution
+         * Still needs some adjustments*/
         int uC1 = getUniqueColours(anotherField.getS1().getComponent(), getBoard().length - 1, 0);
         int uC2 = getUniqueColours(anotherField.getS2().getComponent(), 0, getBoard()[0].length - 1);
         if (uC1 != uC2 && uC1 != uC2 + 1)
@@ -89,56 +95,35 @@ public class Testing {
         return minMoves <= moves;
     }
 
-
-    private int getUniqueColours(Set<Field> playerComponents, int row, int col){
-        Set<Integer> uniqueColors = new HashSet<>();
-        for (Field field : playerComponents){
-            if (!hasSameComp(getBoard()[field.getRow()][field.getCol()], getBoard()[row][col]))
-                continue;
-            uniqueColors.add(field.getColor());
-        }
-        return uniqueColors.size();
-    }
-
-    private boolean hasSameComp(Field thisField, Field startField){
-        return thisField.getComponent() == startField.getComponent();
-    }
-
     public int minMoves(int row, int col) {
         Field[][] testingBoard = pBoard.getCopyOfBoard();
-        SubBoard temp = new SubBoard(testingBoard);
+        SubBoard temp = new SubBoard(testingBoard, SCHLECHTE_AUFGABENSTELLUNG_WEIL);
         Component needle = temp.getBoard()[row][col].getComponent();
         int currentColor = temp.getS1().getColor();
         int moves = 0;
-        System.out.println("needle field: " +temp.getBoard()[row][col]);
-        System.out.println("needle: " +needle);
-        System.out.println("temp.getComponents().contains(needle): " + temp.getComponents().contains(needle));
         while (temp.getComponents().contains(needle)) {
-            if (currentColor == getColors().length - 1)
-                currentColor = 0;
+            if (currentColor == getColors().length )
+                currentColor = 1;
             else currentColor++;
             temp.makeTurnSinglePlayer(temp.getS1(), currentColor);
             moves++;
         }
-        System.out.println(temp);
-        System.out.println(pBoard);
         return moves;
     }
 
 
     public int minMovesFull() {
-        SubBoard temp = new SubBoard(pBoard.getCopyOfBoard());
+        SubBoard temp = new SubBoard(pBoard.getCopyOfBoard(), SCHLECHTE_AUFGABENSTELLUNG_WEIL);
         int currentColor = temp.getS1().getColor();
         int moves = 0;
-        while(temp.getS1().getSize() != (board.length * board[0].length)){
-            if (currentColor == getColors().length - 1)
-                currentColor = 0;
+        while (temp.getS1().getSize() != (board.length * board[0].length)) {
+            if (currentColor == getColors().length)
+                currentColor = 1;
             else currentColor++;
             temp.makeTurnSinglePlayer(temp.getS1(), currentColor);
             moves++;
         }
-        System.out.println(temp);
-        System.out.println(pBoard);
+        Testing test = new Testing(temp.getBoard());
         return moves;
     }
 
@@ -191,6 +176,20 @@ public class Testing {
         return s1 != s2;
     }
 
+    private int getUniqueColours(Set<Field> playerComponents, int row, int col) {
+        Set<Integer> uniqueColors = new HashSet<>();
+        for (Field field : playerComponents) {
+            if (!hasSameComp(getBoard()[field.getRow()][field.getCol()], getBoard()[row][col]))
+                continue;
+            uniqueColors.add(field.getColor());
+        }
+        return uniqueColors.size();
+    }
+
+    private boolean hasSameComp(Field thisField, Field startField) {
+        return thisField.getComponent() == startField.getComponent();
+    }
+
 
     /*
      * Getter und Setter
@@ -209,5 +208,13 @@ public class Testing {
 
     public void setColors(Color[] colors) {
         pBoard.setColors(colors);
+    }
+
+    public Board getpBoard() {
+        return pBoard;
+    }
+
+    public void setpBoard(Board pBoard) {
+        this.pBoard = pBoard;
     }
 }

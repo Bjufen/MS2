@@ -6,6 +6,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Enumeration;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 public class MenuPanel extends JPanel {
 
@@ -169,8 +171,7 @@ public class MenuPanel extends JPanel {
                             "\n#Columns: " + cols.getSelectedItem() +
                             "\nChosen Strategy: " + getStrategy() + "\n");
                 } else {
-                    if (!playPause.getText().equals("Play"))
-                        playPause.setText("Play");
+                    playPause.setText("Play");
                     startStop.setText("Start");
                     timer.stop();
                     elapsedTime = 0;
@@ -179,6 +180,8 @@ public class MenuPanel extends JPanel {
                     enableAllOptions();
                     displayPanel.setEnabledGame(false);
                     displayPanel.turnBlack();
+                    setGameStarted(false);
+                    setS1Started(true);
                 }
             }
         });
@@ -189,6 +192,20 @@ public class MenuPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (playPause.getText().equals("Play")) {
+                    if ((getStarter() == 2 && !isGameStarted())) {
+                        setGameStarted(true);
+                        CompletableFuture.runAsync(() -> {
+                            try {
+                                TimeUnit.SECONDS.sleep(1);
+                            } catch (InterruptedException ex) {
+                                ex.printStackTrace();
+                            }
+                        }).thenRun(() -> {
+                            displayPanel.s2Move();;
+                        });
+                        System.out.println("Player 2 Starting");
+                        setS1Started(false);
+                    }
                     setGameStarted(true);
                     playPause.setText("Pause");
                     timer.start();
@@ -198,10 +215,7 @@ public class MenuPanel extends JPanel {
                     colours.setSelectedItem(getDisplayPanel().getBoard().getaColors());
                     rows.setSelectedItem(getDisplayPanel().getBoard().getaRows());
                     cols.setSelectedItem(getDisplayPanel().getBoard().getaColumns());
-                    if ((getStarter() == 2 && !isGameStarted())) {
-                        displayPanel.s2Move();
-                        setS1Started(false);
-                    }
+
                     if (isS1Started())
                         player1.doClick();
                     else player2.doClick();

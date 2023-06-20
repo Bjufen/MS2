@@ -46,6 +46,21 @@ public class Board {
         initList();
     }
 
+    public Board(Field[][] initBoard, int[] colours){
+        board = initBoard;
+        setColourSet();
+        this.aRows = initBoard.length;
+        this.aColumns = initBoard[0].length;
+        this.aColors = colours.length;
+        setAmountofColors(aColors);
+        components = new HashSet<>();
+        setMidGameComponents();
+        setaColors(aColors);
+        setaRows(initBoard.length);
+        setaColumns(initBoard[0].length);
+        initList();
+    }
+
     public void initList(){
         s1Size = new ArrayList<>();
         s2Size = new ArrayList<>();
@@ -72,7 +87,7 @@ public class Board {
     }
 
     //DANGER(Maybe)
-    private void setMidGameComponents() {
+    public void setMidGameComponents() {
         Set<Field> usedFields = new HashSet<>();
         for (Field[] row : getBoard()) {
             for (Field field : row) {
@@ -219,7 +234,7 @@ public void setPlayerComponents() {
         return occurrence[color];
     }
 
-    private Set<Field> getAllNeighbors(Field field) {
+    public Set<Field> getAllNeighbors(Field field) {
         Set<Field> neighbors = new HashSet<>();
         if (field.getRow() > 0)
             neighbors.add(getBoard()[field.getRow() - 1][field.getCol()]);
@@ -313,12 +328,20 @@ public void setPlayerComponents() {
     //Not sure if all colours have to be present with this method but assuming it because it is supposed to
     private void fillBoard() {
         Random random = new Random();
+        ArrayList<Integer> initColours = new ArrayList<>();
+        for (int i = 0; i< aColors; i++){
+            initColours.add(i);
+        }
+
         int counter = 0;
         for (int i = 0; i < getaRows(); i++) {
             for (int j = 0; j < getaColumns(); j++) {
-                if(counter < aColors) {
-                    board[i][j] = new Field(i, j, counter);
-                    counter++;
+                if (initColours.size() > 0){
+                    int randomColour = (int)(Math.random() * initColours.size());
+                    int randomIndex = random.nextInt(initColours.size());
+                    int color = initColours.get(randomIndex);
+                    initColours.remove(randomIndex);
+                    board[i][j] = new Field(i, j, color);
                     continue;
                 }
                 board[i][j] = new Field(i, j, getRandomDistinctColor(i, j, random));
@@ -377,24 +400,18 @@ public void setPlayerComponents() {
         int[] availableColours = copyExcluding(getColorValues(),getS1().getColor(), getS2().getColor());
         int bestColour = availableColours[0];
         for (int i = 1; i < availableColours.length; i++) {
-            System.out.println("Best colour before for loop: " + bestColour);
-            System.out.println("New colour before for loop: " + availableColours[i]);
             bestColour = switch (strategy) {
                 case 1 -> strategy1(bestColour, availableColours[i]);
                 case 2 -> strategy2(bestColour, availableColours[i]);
                 default -> strategy3(bestColour, availableColours[i]);
             };
-            System.out.println("BestColour after for loop: " + bestColour);
         }
-        System.out.println("BestColour: " + bestColour);
         return bestColour;
     }
 
-    private int strategy1(int bestColor, int newColor) {
-        int bestC = getOccurences(s2, bestColor);
-        int newC = getOccurences(s2, newColor);
-        System.out.println("SizeChange(S2) with bestColor: " + bestC);
-        System.out.println("SizeChange(S2) with newColor: " + newC);
+    public int strategy1(int bestColor, int newColor) {
+        int bestC = getOccurences(getS2(), bestColor);
+        int newC = getOccurences(getS2(), newColor);
         if (bestC == newC) {
             return Math.min(bestColor, newColor);
         }
@@ -403,11 +420,9 @@ public void setPlayerComponents() {
         else return newColor;
     }
 
-    private int strategy2(int bestColor, int newColor) {
-        int bestC = getOccurences(s2, bestColor);
-        int newC = getOccurences(s2, newColor);
-        System.out.println("SizeChange(S2) with bestColor: " + bestC);
-        System.out.println("SizeChange(S2) with newColor: " + newC);
+    public int strategy2(int bestColor, int newColor) {
+        int bestC = getOccurences(getS2(), bestColor);
+        int newC = getOccurences(getS2(), newColor);
         if (bestC == newC) {
             return Math.min(bestColor, newColor);
         }
@@ -416,11 +431,9 @@ public void setPlayerComponents() {
         else return newColor;
     }
 
-    private int strategy3(int bestColor, int newColor) {
-        int bestC = getOccurences(s1, bestColor);
-        int newC = getOccurences(s1, newColor);
-        System.out.println("SizeChange(S1) with bestColor: " + bestC);
-        System.out.println("SizeChange(S1) with newColor: " + newC);
+    public int strategy3(int bestColor, int newColor) {
+        int bestC = getOccurences(getS1(), bestColor);
+        int newC = getOccurences(getS1(), newColor);
         if (bestC == newC) {
             return Math.min(bestColor, newColor);
         }
@@ -440,34 +453,16 @@ public void setPlayerComponents() {
 
     public int[] copyExcluding(int[] original, int excludeValue1, int excludeValue2) {
         int[] copy = new int[original.length - 2];  // Create a new array that's two elements shorter
-            System.out.println("Array i: " + java.util.Arrays.toString(original));
-            System.out.println("Array j: " + java.util.Arrays.toString(copy));
         int j = 0;
         for (int i = 0; i < original.length; i++) {
-            System.out.println("Start of for loop" +
-                    "\ni: " + i +
-                    "\nj: " + j +
-                    "\nOriginal value of index i = " + i + ": " + original[i] +
-                    "\n");
-            System.out.println("Array i: " + java.util.Arrays.toString(original));
-            System.out.println("Array j: " + java.util.Arrays.toString(copy) + "\n");
             // Skip over the values that we're excluding
             if (original[i] == excludeValue1 || original[i] == excludeValue2) {
-                System.out.println("if clause true\n");
-                System.out.println("Array i: " + java.util.Arrays.toString(original));
-                System.out.println("Array j: " + java.util.Arrays.toString(copy) + "\n");
                 continue;
             }
             // Copy over the element
-            System.out.println("Element to be added to copy: " + original[i]);
             copy[j] = original[i];
             j++;
-            System.out.println("if clause false" +
-                    "\nCopy value at index j = " + (j - 1) + ": " +  copy[j-1] + "\n");
-            System.out.println("Array i: " + java.util.Arrays.toString(original));
-            System.out.println("Array j: " + java.util.Arrays.toString(copy) + "\n");
         }
-         System.out.println("Copy:" + java.util.Arrays.toString(copy));
         return copy;
     }
 
@@ -565,7 +560,6 @@ public void setPlayerComponents() {
     }
 
     public boolean isDone() {
-        System.out.println(java.util.Arrays.toString(components.toArray()));
         if((checkLastTwoMoves(s1Size)) && (checkLastTwoMoves(s2Size)))
             return true;
         return components.size() == 0;
@@ -582,7 +576,7 @@ public void setPlayerComponents() {
 
     @Override
     public String toString() {
-        StringBuilder out = new StringBuilder("BOARD HERE:\n");
+        StringBuilder out = new StringBuilder();
         for (Field[] fields : board) {
             for (Field field : fields) {
                 out.append(field.getColor()).append("\t");
