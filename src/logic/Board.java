@@ -15,6 +15,7 @@ public class Board {
     private Set<Component> components;
     private Set<Color> colourSet;
     private boolean s1Turn;
+    private ArrayList<Integer> s1Size, s2Size;
 
 
     public Board(int aColors, int aRows, int aColumns) {
@@ -26,6 +27,7 @@ public class Board {
         createBoard();
         components = new HashSet<>();
         setAllComponents();
+        initList();
 
     }
 
@@ -41,8 +43,22 @@ public class Board {
         setaColors(colors.length);
         setaRows(initBoard.length);
         setaColumns(initBoard[0].length);
+        initList();
     }
 
+    private void initList(){
+        s1Size = new ArrayList<>();
+        s2Size = new ArrayList<>();
+    }
+
+    private boolean checkLastTwoMoves(ArrayList<Integer> list){
+        if (list.size() >= 2) { // Make sure the list has at least 2 elements
+            int lastIndex = list.size() - 1;
+            return list.get(lastIndex).equals(list.get(lastIndex - 1));
+        } else {
+            return false;
+        }
+    }
 
     private void setAllComponents() {
         for (int i = 0; i < getaRows(); i++) {
@@ -146,6 +162,12 @@ private void setPlayerComponents() {
     public void makeTurnSinglePlayer(Component player, int color) {
         player.changeColor(color);
         mergeComponents(player);
+        if (player == getS1())
+            s1Size.add(getS1().getSize());
+        else if (player == getS2())
+            s2Size.add(getS2().getSize());
+        System.out.println("S1 Size: " + java.util.Arrays.toString(s1Size.toArray()));
+        System.out.println("S2 Size: " + java.util.Arrays.toString(s2Size.toArray()));
     }
 
     public void makeTurn2Player(Component player, int color) {
@@ -548,6 +570,8 @@ private void setPlayerComponents() {
 
     public boolean isDone() {
         System.out.println(java.util.Arrays.toString(components.toArray()));
+        if((checkLastTwoMoves(s1Size)) && (checkLastTwoMoves(s2Size)))
+            return true;
         return components.size() == 0;
     }
 

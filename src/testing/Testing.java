@@ -38,7 +38,10 @@ public class Testing {
             return false;
         return cornersDifferent();
     }
-
+    /*
+    * Was wenn es nur noch zwei Farben aufm Brett, aber die nicht alle zu s1 oder s2 gehören?
+    *
+    * */
     public boolean isEndConfig() {
         return pBoard.getAllColorsBoard().length == 2;
     }
