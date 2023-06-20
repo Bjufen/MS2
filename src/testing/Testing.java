@@ -8,6 +8,7 @@ package testing;
 import logic.Board;
 import logic.Component;
 import logic.Field;
+import logic.SubBoard;
 
 import java.awt.*;
 import java.util.HashSet;
@@ -38,7 +39,10 @@ public class Testing {
             return false;
         return cornersDifferent();
     }
-
+    /*
+    * Was wenn es nur noch zwei Farben aufm Brett, aber die nicht alle zu s1 oder s2 gehören?
+    *
+    * */
     public boolean isEndConfig() {
         return pBoard.getAllColorsBoard().length == 2;
     }
@@ -101,25 +105,41 @@ public class Testing {
     }
 
     public int minMoves(int row, int col) {
-        Board temp = new Board(getBoard());
+        Field[][] testingBoard = pBoard.getCopyOfBoard();
+        SubBoard temp = new SubBoard(testingBoard);
         Component needle = temp.getBoard()[row][col].getComponent();
-        Component s1 = temp.getS1();
-        int currentColor = s1.getColor();
+        int currentColor = temp.getS1().getColor();
         int moves = 0;
-        while (!temp.getComponents().contains(needle)) {
+        System.out.println("needle field: " +temp.getBoard()[row][col]);
+        System.out.println("needle: " +needle);
+        System.out.println("temp.getComponents().contains(needle): " + temp.getComponents().contains(needle));
+        while (temp.getComponents().contains(needle)) {
             if (currentColor == getColors().length - 1)
                 currentColor = 0;
             else currentColor++;
-            temp.makeTurnSinglePlayer(s1, currentColor);
+            temp.makeTurnSinglePlayer(temp.getS1(), currentColor);
             moves++;
         }
+        System.out.println(temp);
+        System.out.println(pBoard);
         return moves;
     }
 
 
     public int minMovesFull() {
-        Field s2 = getBoard()[0][getBoard()[0].length - 1];
-        return minMoves(s2.getRow(), s2.getCol());
+        SubBoard temp = new SubBoard(pBoard.getCopyOfBoard());
+        int currentColor = temp.getS1().getColor();
+        int moves = 0;
+        while(temp.getS1().getSize() != (board.length * board[0].length)){
+            if (currentColor == getColors().length - 1)
+                currentColor = 0;
+            else currentColor++;
+            temp.makeTurnSinglePlayer(temp.getS1(), currentColor);
+            moves++;
+        }
+        System.out.println(temp);
+        System.out.println(pBoard);
+        return moves;
     }
 
     //Returns true if every cell of every cell's neighbour is a different color

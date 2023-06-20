@@ -15,6 +15,7 @@ public class Board {
     private Set<Component> components;
     private Set<Color> colourSet;
     private boolean s1Turn;
+    private ArrayList<Integer> s1Size, s2Size;
 
 
     public Board(int aColors, int aRows, int aColumns) {
@@ -26,6 +27,7 @@ public class Board {
         createBoard();
         components = new HashSet<>();
         setAllComponents();
+        initList();
 
     }
 
@@ -41,8 +43,22 @@ public class Board {
         setaColors(colors.length);
         setaRows(initBoard.length);
         setaColumns(initBoard[0].length);
+        initList();
     }
 
+    public void initList(){
+        s1Size = new ArrayList<>();
+        s2Size = new ArrayList<>();
+    }
+
+    private boolean checkLastTwoMoves(ArrayList<Integer> list){
+        if (list.size() >= 2) { // Make sure the list has at least 2 elements
+            int lastIndex = list.size() - 1;
+            return list.get(lastIndex).equals(list.get(lastIndex - 1));
+        } else {
+            return false;
+        }
+    }
 
     private void setAllComponents() {
         for (int i = 0; i < getaRows(); i++) {
@@ -110,7 +126,7 @@ public class Board {
             }
         }
     }*/
-private void setPlayerComponents() {
+public void setPlayerComponents() {
     Iterator<Component> componentIterator = components.iterator();
 
     while (componentIterator.hasNext()) {
@@ -137,7 +153,7 @@ private void setPlayerComponents() {
 }
 
 
-    private void setStartComponents() {
+    public void setStartComponents() {
         s1 = new Component(getBoard()[getBoard().length - 1][0]);
         s2 = new Component(getBoard()[0][getBoard()[0].length - 1]);
     }
@@ -146,22 +162,23 @@ private void setPlayerComponents() {
     public void makeTurnSinglePlayer(Component player, int color) {
         player.changeColor(color);
         mergeComponents(player);
+        if (player == getS1())
+            s1Size.add(getS1().getSize());
+        else if (player == getS2())
+            s2Size.add(getS2().getSize());
     }
 
-    public void makeTurn2Player(Component player, int color) {
-        makeTurnSinglePlayer(player, color);
-        changePlayer();
-    }
-
-
-    public void changePlayer() {
-        this.setS1Turn(!isS1Turn());
-    }
-
-    private Field[][] getCopyOfBoard(){
-        Field[][] copy = new Field[this.getBoard().length][];
+    public Field[][] getCopyOfBoard(){
+        int row, col, color;
+        Field[][] copy = new Field[this.getBoard().length][this.getBoard()[0].length];
         for (int i = 0; i < this.getBoard().length; i++) {
-            copy[i] = Arrays.copyOf(this.getBoard()[i], this.getBoard()[i].length);
+            for(int j = 0; j < this.getBoard()[0].length; j++){
+                row = i;
+                col = j;
+                color = this.getBoard()[i][j].getColor();
+                copy[i][j] = new Field(row, col, color);
+
+            }
         }
         return copy;
     }
@@ -181,6 +198,7 @@ private void setPlayerComponents() {
         newSize = copy.getS2().getSize();
         return newSize - originalSize;
     }
+
     public Set<Component> getAllNeighboringComponents(Component component) {
         Set<Component> neighbouringComponents = new HashSet<>();
         for (Field field : component.getComponent()) {
@@ -548,6 +566,8 @@ private void setPlayerComponents() {
 
     public boolean isDone() {
         System.out.println(java.util.Arrays.toString(components.toArray()));
+        if((checkLastTwoMoves(s1Size)) && (checkLastTwoMoves(s2Size)))
+            return true;
         return components.size() == 0;
     }
 
@@ -559,4 +579,18 @@ private void setPlayerComponents() {
             return "Player 2 Wins!";
         else return "Tie!";
     }
+
+    @Override
+    public String toString() {
+        StringBuilder out = new StringBuilder("BOARD HERE:\n");
+        for (Field[] fields : board) {
+            for (Field field : fields) {
+                out.append(field.getColor()).append("\t");
+
+            }
+            out.append("\n");
+        }
+        return out.toString();
+    }
+
 }

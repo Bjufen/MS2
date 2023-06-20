@@ -5,14 +5,8 @@ import logic.Board;
 import logic.Field;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.net.http.HttpResponse;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.concurrent.CompletableFuture;
@@ -123,7 +117,6 @@ public class DisplayPanel extends JPanel {
         }
     }
 
-    //fix
     public void reloadBoard() {
         boardButtons = new ButtonDesign[board.getaRows()][board.getaColumns()];
         middlePanel.removeAll();
@@ -136,6 +129,33 @@ public class DisplayPanel extends JPanel {
             }
         }
     }
+
+    public void removeBoard(){
+        boardButtons = new ButtonDesign[board.getaRows()][board.getaColumns()];
+        middlePanel.removeAll();
+        middlePanel.setLayout(new GridLayout(board.getaRows(), board.getaColumns()));
+        for (Field[] row : board.getBoard()) {
+            for (Field field : row) {
+                if (field != null) {
+                    ButtonDesign button = new ButtonDesign();
+                    button.setEnabled(false);
+                    middlePanel.add(button);
+                    boardButtons[field.getRow()][field.getCol()] = button;
+                }
+            }
+        }
+
+    }
+
+    public void turnBlack() {
+        removeBoard();
+        removeBottomPanel();
+        removeTopPanel();
+    }
+
+
+
+
 
     private void addButton(Field field) {
         ButtonDesign button = new ButtonDesign(board.getColors()[field.getColor()]);
@@ -212,12 +232,19 @@ public class DisplayPanel extends JPanel {
         player2Count.setText("Player 2 Component Size: " + getBoard().getS2().getSize());
     }
 
+    private void removeTopPanel() {
+        player1Count.setText("");
+        player2Count.setText("");
+    }
+
+
+
     public void reloadBottomPanel() {
         colourButtons = new ButtonDesign_2[board.getColors().length];
         System.out.println("ColourButtons: " + java.util.Arrays.toString(colourButtons));
         buttonPanel.removeAll();
         for (int i = 0, colourButtonsLength = colourButtons.length; i < colourButtonsLength; i++) {
-            ButtonDesign_2 button = colourButtons[i];
+            ButtonDesign_2 button;
             button = new ButtonDesign_2(board.getColors()[i], i + 1);
             buttonPanel.add(button);
             colourButtons[i] = button;
@@ -243,6 +270,14 @@ public class DisplayPanel extends JPanel {
         bottomPanel.add(buttonPanel, 1);
         this.add(bottomPanel, BorderLayout.SOUTH);
     }
+
+    private void removeBottomPanel() {
+        bottomPanel.add(buttonPanel, 1);
+        this.add(bottomPanel, BorderLayout.SOUTH);
+        buttonPanel.removeAll();
+    }
+
+
 
     public void loadBottomPanel(Color[] colours) {
         bottomPanel = new JPanel();

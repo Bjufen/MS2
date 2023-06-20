@@ -12,7 +12,11 @@ import testing.Testing;
 public class Start {
 
 	public static void main(String[] args) {
-		Frame frame = new Frame();
+		//Frame frame = new Frame();
+
+		Testing test1 = new Testing(5,7,9);
+
+		System.out.println(test1.minMovesFull());
 	}
 
 

@@ -178,6 +178,7 @@ public class MenuPanel extends JPanel {
                     playPause.setEnabled(false);
                     enableAllOptions();
                     displayPanel.setEnabledGame(false);
+                    displayPanel.turnBlack();
                 }
             }
         });
@@ -213,6 +214,8 @@ public class MenuPanel extends JPanel {
                 }
             }
         });
+
+
         startPlayPanel.add(startStop);
         startPlayPanel.add(playPause);
         this.add(startPlayPanel);
