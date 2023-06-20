@@ -13,8 +13,8 @@ import testing.Testing;
 public class Start {
 
     public static void main(String[] args) {
-        //Frame frame = new Frame();
-        Field[][] initBoard = new Field[5][5];
+        Frame frame = new Frame();
+       /* Field[][] initBoard = new Field[5][5];
         int[] values =
                 {4,	5,	2,	0,	1,
                         3,	0,	3	,4,	3,
@@ -30,11 +30,11 @@ public class Start {
             }
         }
 
-	/*Testing test1 = new Testing(5,5);
+	*//*Testing test1 = new Testing(5,5);
 		System.out.println(test1.isStartklar());
 		System.out.println();
 		System.out.println(test1.getpBoard());
-		System.out.println(test1.minMovesFull());*/
+		System.out.println(test1.minMovesFull());*//*
 
         Testing testing = new Testing(initBoard);
         System.out.println(testing.getpBoard());
@@ -47,7 +47,7 @@ public class Start {
         System.out.println("Strat2");
         System.out.println(testing.testStrategy02());
         System.out.println("Strat3");
-        System.out.println(testing.testStrategy03());
+        System.out.println(testing.testStrategy03());*/
 
     }
 

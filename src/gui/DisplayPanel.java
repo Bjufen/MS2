@@ -33,7 +33,14 @@ public class DisplayPanel extends JPanel {
         westPanel = new JPanel();
         bottomPanel = new JPanel();
         topPanel = new JPanel();
-        middlePanel = new JPanel();
+        middlePanel = new JPanel() {
+            @Override
+            public Dimension getPreferredSize() {
+                Dimension size = super.getPreferredSize();
+                int largestDimension = Math.max(size.width, size.height);
+                return new Dimension(largestDimension, largestDimension);
+            }
+        };
       /*  eastPanel.setBackground(new Color(190,190,190));
         westPanel.setBackground(new Color(190,190,190));
         bottomPanel.setBackground(new Color(190,190,190));
@@ -106,7 +113,14 @@ public class DisplayPanel extends JPanel {
     }
 
     public void showBoard() {
-        middlePanel = new JPanel();
+        middlePanel = new JPanel() {
+            @Override
+            public Dimension getPreferredSize() {
+                Dimension size = super.getPreferredSize();
+                int largestDimension = Math.max(size.width, size.height);
+                return new Dimension(largestDimension, largestDimension);
+            }
+        };
         boardButtons = new ButtonDesign[board.getaRows()][board.getaColumns()];
         middlePanel.setLayout(new GridLayout(board.getaRows(), board.getaColumns()));
         for (Field[] row : board.getBoard()) {

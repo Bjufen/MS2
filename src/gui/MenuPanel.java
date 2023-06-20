@@ -58,7 +58,7 @@ public class MenuPanel extends JPanel {
                 Have Fun!\s
                 """);
         this.displayPanel = displayPanel;
-        this.setPreferredSize(new Dimension(200, getHeight()));
+        this.setPreferredSize(new Dimension(150, getHeight()));
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         addTimerPanel();

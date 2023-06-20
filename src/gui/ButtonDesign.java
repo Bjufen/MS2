@@ -26,4 +26,11 @@ public class ButtonDesign extends JButton {
         this.colour = colour;
         this.setBackground(colour);
     }
+
+    @Override
+    public Dimension getPreferredSize() {
+        Dimension size = super.getPreferredSize();
+        int largestDimension = Math.max(size.width, size.height);
+        return new Dimension(largestDimension, largestDimension);
+    }
 }
