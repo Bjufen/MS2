@@ -46,7 +46,7 @@ public class Board {
         initList();
     }
 
-    public Board(Field[][] initBoard, int[] colours){
+    public Board(Field[][] initBoard, int[] colours) {
         board = initBoard;
         setColourSet();
         this.aRows = initBoard.length;
@@ -61,15 +61,48 @@ public class Board {
         initList();
     }
 
-    public void initList(){
+    public Board(Field[][] initBoard, int[] colours, int newColour, boolean s1Turn) {
+        if (s1Turn) {
+            board = initBoard;
+            setColourSet();
+            this.aRows = initBoard.length;
+            this.aColumns = initBoard[0].length;
+            this.aColors = colours.length;
+            setAmountofColors(aColors);
+            components = new HashSet<>();
+            setMidGameComponents();
+            setaColors(aColors);
+            setaRows(initBoard.length);
+            setaColumns(initBoard[0].length);
+            initList();
+            makeTurnSinglePlayer(getS1(), newColour);
+        } else {
+            board = initBoard;
+            setColourSet();
+            this.aRows = initBoard.length;
+            this.aColumns = initBoard[0].length;
+            this.aColors = colours.length;
+            setAmountofColors(aColors);
+            components = new HashSet<>();
+            setMidGameComponents();
+            setaColors(aColors);
+            setaRows(initBoard.length);
+            setaColumns(initBoard[0].length);
+            initList();
+            makeTurnSinglePlayer(getS2(), newColour);
+        }
+    }
+
+    public void initList() {
         s1Size = new ArrayList<>();
         s2Size = new ArrayList<>();
     }
 
-    private boolean checkLastTwoMoves(ArrayList<Integer> list){
-        if (list.size() >= 2) { // Make sure the list has at least 2 elements
+    private boolean checkLastTwoMoves(ArrayList<Integer> list) {
+        if (list.size() >= 3) { // Make sure the list has at least 2 elements
             int lastIndex = list.size() - 1;
-            return list.get(lastIndex).equals(list.get(lastIndex - 1));
+            System.out.println(list.get(lastIndex) + " " + list.get(lastIndex - 2));
+            return list.get(lastIndex).equals(list.get(lastIndex - 2));
         } else {
             return false;
         }
@@ -111,61 +144,71 @@ public class Board {
                 }
                 fields.addAll(newFields);
                 component.setComponent(fields);
-                for (Field field1 : component.getComponent()){
+                for (Field field1 : component.getComponent()) {
                     field1.setComponent(component);
                 }
                 components.add(component);
+            }
+        }
+        for (Component component : components){
+            for (Field field : component.getComponent()){
+                if ((field.getCol() == 0) && (field.getRow() == board.length - 1)){
+                    System.out.println("-----------------------------------------------------\n" +
+                            "S1 COMPONENT:" +
+                            "\n" + component + "\n" +
+                            "-----------------------------------------------------\n");
+                }
             }
         }
         setPlayerComponents();
     }
 
 
-/*    private void setPlayerComponents() {
-        for (Component component : components) {
+    /*    private void setPlayerComponents() {
+            for (Component component : components) {
+                if (component.getComponent().contains(getBoard()[getBoard().length - 1][0])) {
+                    s1 = component;
+                    components.remove(component);
+                    for(Field field : s1.getComponent()){
+                        field.setComponent(s1);
+                    }
+                    continue;
+                }
+                if (component.getComponent().contains(getBoard()[0][getBoard()[0].length - 1])) {
+                    s2 = component;
+                    components.remove(component);
+                    for(Field field : s2.getComponent()){
+                        field.setComponent(s2);
+                    }
+                    continue;
+                }
+            }
+        }*/
+    public void setPlayerComponents() {
+        Iterator<Component> componentIterator = components.iterator();
+
+        while (componentIterator.hasNext()) {
+            Component component = componentIterator.next();
+
             if (component.getComponent().contains(getBoard()[getBoard().length - 1][0])) {
                 s1 = component;
-                components.remove(component);
-                for(Field field : s1.getComponent()){
+                componentIterator.remove();  // Safe removal
+                for (Field field : s1.getComponent()) {
                     field.setComponent(s1);
                 }
                 continue;
             }
+
             if (component.getComponent().contains(getBoard()[0][getBoard()[0].length - 1])) {
                 s2 = component;
-                components.remove(component);
-                for(Field field : s2.getComponent()){
+                componentIterator.remove();  // Safe removal
+                for (Field field : s2.getComponent()) {
                     field.setComponent(s2);
                 }
                 continue;
             }
         }
-    }*/
-public void setPlayerComponents() {
-    Iterator<Component> componentIterator = components.iterator();
-
-    while (componentIterator.hasNext()) {
-        Component component = componentIterator.next();
-
-        if (component.getComponent().contains(getBoard()[getBoard().length - 1][0])) {
-            s1 = component;
-            componentIterator.remove();  // Safe removal
-            for (Field field : s1.getComponent()) {
-                field.setComponent(s1);
-            }
-            continue;
-        }
-
-        if (component.getComponent().contains(getBoard()[0][getBoard()[0].length - 1])) {
-            s2 = component;
-            componentIterator.remove();  // Safe removal
-            for (Field field : s2.getComponent()) {
-                field.setComponent(s2);
-            }
-            continue;
-        }
     }
-}
 
 
     public void setStartComponents() {
@@ -179,15 +222,25 @@ public void setPlayerComponents() {
         mergeComponents(player);
         if (player == getS1())
             s1Size.add(getS1().getSize());
-        else if (player == getS2())
+        else
             s2Size.add(getS2().getSize());
     }
 
-    public Field[][] getCopyOfBoard(){
+    public Field[][] makeTurnToBoard(Component player, int color) {
+        player.changeColor(color);
+        mergeComponents(player);
+        if (player == getS1())
+            s1Size.add(getS1().getSize());
+        else
+            s2Size.add(getS2().getSize());
+        return board;
+    }
+
+    public Field[][] getCopyOfBoard() {
         int row, col, color;
         Field[][] copy = new Field[this.getBoard().length][this.getBoard()[0].length];
         for (int i = 0; i < this.getBoard().length; i++) {
-            for(int j = 0; j < this.getBoard()[0].length; j++){
+            for (int j = 0; j < this.getBoard()[0].length; j++) {
                 row = i;
                 col = j;
                 color = this.getBoard()[i][j].getColor();
@@ -197,6 +250,7 @@ public void setPlayerComponents() {
         }
         return copy;
     }
+
     public int predictSizeChangeS1(int color) {
         Board copy = new Board(getCopyOfBoard());
         int originalSize = getS1().getSize();
@@ -205,6 +259,7 @@ public void setPlayerComponents() {
         newSize = copy.getS1().getSize();
         return newSize - originalSize;
     }
+
     public int predictSizeChangeS2(int color) {
         Board copy = new Board(getCopyOfBoard());
         int originalSize = getS2().getSize();
@@ -225,10 +280,10 @@ public void setPlayerComponents() {
         return neighbouringComponents;
     }
 
-    public int getOccurences(Component player, int color){
+    public int getOccurences(Component player, int color) {
         Set<Component> playerNeighbours = new HashSet<>(getAllNeighboringComponents(player));
         int[] occurrence = new int[getaColors()];
-        for (Component neighbour : playerNeighbours){
+        for (Component neighbour : playerNeighbours) {
             occurrence[neighbour.getColor()]++;
         }
         return occurrence[color];
@@ -270,7 +325,7 @@ public void setPlayerComponents() {
         Iterator<Color> iterator = colourSet.iterator();
         for (int i = 0; i < temp.length; i++) {
             Color selectedColour = iterator.next();
-            while (usedColours.contains(selectedColour)){
+            while (usedColours.contains(selectedColour)) {
                 selectedColour = iterator.next();
             }
             temp[i] = selectedColour;
@@ -280,7 +335,7 @@ public void setPlayerComponents() {
         colors = java.util.Arrays.copyOfRange(temp, 0, amountofColors);
     }
 
-    private void setColourSet(){
+    private void setColourSet() {
         colourSet = new HashSet<>();
         colourSet.add(Color.GREEN);
         colourSet.add(Color.RED);
@@ -290,13 +345,12 @@ public void setPlayerComponents() {
         colourSet.add(Color.CYAN);
         colourSet.add(Color.PINK);
         colourSet.add(Color.ORANGE);
-        colourSet.add(new Color(160,32,240));
+        colourSet.add(new Color(160, 32, 240));
     }
 
-    private void shuffle(Color[] array){
+    private void shuffle(Color[] array) {
         Random rnd = ThreadLocalRandom.current();
-        for (int i = array.length - 1; i > 0; i--)
-        {
+        for (int i = array.length - 1; i > 0; i--) {
             int index = rnd.nextInt(i + 1);
             // Simple swap
             Color a = array[index];
@@ -329,15 +383,15 @@ public void setPlayerComponents() {
     private void fillBoard() {
         Random random = new Random();
         ArrayList<Integer> initColours = new ArrayList<>();
-        for (int i = 0; i< aColors; i++){
+        for (int i = 0; i < aColors; i++) {
             initColours.add(i);
         }
 
         int counter = 0;
         for (int i = 0; i < getaRows(); i++) {
             for (int j = 0; j < getaColumns(); j++) {
-                if (initColours.size() > 0){
-                    int randomColour = (int)(Math.random() * initColours.size());
+                if (initColours.size() > 0) {
+                    int randomColour = (int) (Math.random() * initColours.size());
                     int randomIndex = random.nextInt(initColours.size());
                     int color = initColours.get(randomIndex);
                     initColours.remove(randomIndex);
@@ -381,23 +435,23 @@ public void setPlayerComponents() {
                 return false;
         } catch (NullPointerException ignored) {
         }
-        if(row == board.length - 1 && col == 0){
+        if (row == board.length - 1 && col == 0) {
             return value != board[0][board[0].length - 1].getColor();
         }
         return true;
     }
 
 
-    public int[] getColorValues(){
+    public int[] getColorValues() {
         int[] out = new int[aColors];
-        for (int i = 0; i < aColors ; i++) {
+        for (int i = 0; i < aColors; i++) {
             out[i] = i;
         }
         return out;
     }
 
     public int strategy(int strategy) {
-        int[] availableColours = copyExcluding(getColorValues(),getS1().getColor(), getS2().getColor());
+        int[] availableColours = copyExcluding(getColorValues(), getS1().getColor(), getS2().getColor());
         int bestColour = availableColours[0];
         for (int i = 1; i < availableColours.length; i++) {
             bestColour = switch (strategy) {
@@ -465,8 +519,6 @@ public void setPlayerComponents() {
         }
         return copy;
     }
-
-
 
 
     private void updateBoard() {
@@ -543,14 +595,6 @@ public void setPlayerComponents() {
         this.components = components;
     }
 
-    public boolean isS1Turn() {
-        return s1Turn;
-    }
-
-    public void setS1Turn(boolean s1Turn) {
-        this.s1Turn = s1Turn;
-    }
-
     public Set<Color> getColourSet() {
         return colourSet;
     }
@@ -560,14 +604,17 @@ public void setPlayerComponents() {
     }
 
     public boolean isDone() {
-        if((checkLastTwoMoves(s1Size)) && (checkLastTwoMoves(s2Size)))
+        System.out.println("Sizes:");
+        boolean s1 = checkLastTwoMoves(s1Size);
+        boolean s2 = checkLastTwoMoves(s2Size);
+        if ((checkLastTwoMoves(s1Size)) && (checkLastTwoMoves(s2Size)))
             return true;
         return components.size() == 0;
     }
 
 
     public String getVictor() {
-        if(s1.getComponent().size() > s2.getComponent().size())
+        if (s1.getComponent().size() > s2.getComponent().size())
             return "Player 1 Wins!";
         else if (s2.getComponent().size() > s1.getComponent().size())
             return "Player 2 Wins!";

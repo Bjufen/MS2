@@ -11,6 +11,7 @@ import logic.Field;
 import logic.SubBoard;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,12 +20,12 @@ public class Testing {
     private final Field[][] board;
     private Board pBoard;
 
-    private final int[] SCHLECHTE_AUFGABENSTELLUNG_WEIL = {1,2,3,4,5,6};
+    private final int[] SCHLECHTE_AUFGABENSTELLUNG_WEIL = {1, 2, 3, 4, 5, 6};
 
 
     public Testing(Field[][] initBoard) {
         this.board = initBoard;
-        pBoard = new Board(initBoard,SCHLECHTE_AUFGABENSTELLUNG_WEIL);
+        pBoard = new Board(initBoard, SCHLECHTE_AUFGABENSTELLUNG_WEIL);
 
     }
 
@@ -53,46 +54,80 @@ public class Testing {
 
     public int testStrategy01() {
         SubBoard temp = new SubBoard(board, SCHLECHTE_AUFGABENSTELLUNG_WEIL);
-        return temp.strategies(1, getpBoard().getS2()) ;
+        return temp.strategies(1, getpBoard().getS2());
     }
 
     public int testStrategy02() {
         SubBoard temp = new SubBoard(board, SCHLECHTE_AUFGABENSTELLUNG_WEIL);
-        return temp.strategies(2,getpBoard().getS2()) ;
+        return temp.strategies(2, getpBoard().getS2());
     }
 
     public int testStrategy03() {
         SubBoard temp = new SubBoard(board, SCHLECHTE_AUFGABENSTELLUNG_WEIL);
-        return temp.strategies(3, getpBoard().getS1()) ;
+        return temp.strategies(3, getpBoard().getS1());
     }
 
-    //todo
     public boolean toBoard(Field[][] anotherBoard, int moves) {
         if (this.getBoard().length != anotherBoard.length)
             return false;
         if (this.getBoard()[0].length != anotherBoard[0].length)
             return false;
-        if (!this.pBoard.isS1Turn())
-            return false;
         Board anotherField = new Board(anotherBoard);
-        for (int i = 0; i < anotherBoard.length; i++) {
+        /*for (int i = 0; i < anotherBoard.length; i++) {
             for (int j = 0; j < anotherBoard[0].length; j++) {
                 if (!(anotherField.getS1().getComponent().contains(getBoard()[i][j]) || anotherField.getS2().getComponent().contains(getBoard()[i][j]))) {
                     if (anotherBoard[i][j].getColor() != getBoard()[i][j].getColor())
                         return false;
                 }
             }
-        }
-        /*
-         * Not final solution
-         * Still needs some adjustments*/
-        int uC1 = getUniqueColours(anotherField.getS1().getComponent(), getBoard().length - 1, 0);
-        int uC2 = getUniqueColours(anotherField.getS2().getComponent(), 0, getBoard()[0].length - 1);
-        if (uC1 != uC2 && uC1 != uC2 + 1)
-            return false;
-        int minMoves = uC1 + uC2;
+        }*/
+        return recursiveStep(getpBoard(), anotherField, moves, true);
+    }
 
-        return minMoves <= moves;
+    public boolean recursiveStep(Board ourBoard, Board anotherBoard, int moves, boolean s1Turn) {
+        boolean isIdentical = recursiveHelper(ourBoard, anotherBoard);
+        System.out.println("-------------------------------------------------------------");
+        System.out.println("Moves left: " + moves + "\nourBoard:\n" + ourBoard + "\nanotherBoard:\n" + anotherBoard);
+        System.out.println("Isidentical: " + isIdentical);
+        if ((moves == 0 || (isIdentical)))
+            return isIdentical;
+
+       /* int ourBoardS1Size = ourBoard.getS1().getSize();
+        int ourBoardS2Size = ourBoard.getS2().getSize();
+        int anotherBoardS1Size = anotherBoard.getS1().getSize();
+        int anotherBoardS2Size = anotherBoard.getS2().getSize();
+
+        if ((ourBoardS1Size > anotherBoardS1Size) || (ourBoardS2Size > anotherBoardS2Size)) return false;*/
+        Board copyBoard;
+        for (int i = 1; i < 7; i++) {
+            Board copyBoard2;
+            if ((i == ourBoard.getS1().getColor()) || (i == ourBoard.getS2().getColor()))
+                continue;
+            copyBoard = new Board(ourBoard.getCopyOfBoard());
+            if(s1Turn) {
+                copyBoard2 = new Board(copyBoard.makeTurnToBoard(copyBoard.getS1(),i));
+                System.out.println("CopyBoard:\n" + copyBoard);
+                System.out.println("CopyBoard2:\n" + copyBoard2);
+            }
+            else{
+                copyBoard2 = new Board(copyBoard.makeTurnToBoard(copyBoard.getS2(),i));
+            }
+            if (recursiveStep(copyBoard2, anotherBoard, moves - 1, !s1Turn))
+                return true;
+        }
+        return false;
+    }
+
+    private boolean recursiveHelper(Board ourBoard, Board anotherBoard) {
+        Field[][] ourField = ourBoard.getBoard();
+        Field[][] anotherField = anotherBoard.getBoard();
+        for (int i = 0; i < ourField.length; i++) {
+            for (int j = 0; j < ourField[0].length; j++) {
+                if (ourField[i][j].getColor() != anotherField[i][j].getColor())
+                    return false;
+            }
+        }
+        return true;
     }
 
     public int minMoves(int row, int col) {
@@ -102,12 +137,13 @@ public class Testing {
         int currentColor = temp.getS1().getColor();
         int moves = 0;
         while (temp.getComponents().contains(needle)) {
-            if (currentColor == getColors().length )
+            if (currentColor == getColors().length)
                 currentColor = 1;
             else currentColor++;
             temp.makeTurnSinglePlayer(temp.getS1(), currentColor);
             moves++;
         }
+        System.out.println(temp);
         return moves;
     }
 
