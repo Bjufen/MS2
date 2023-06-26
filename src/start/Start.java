@@ -16,6 +16,25 @@ public class Start {
 
     public static void main(String[] args) {
         //Frame frame = new Frame();
+        /*System.out.println("This is a string with a newline character.\nThis is the second line.");
+        System.out.println();
+        System.out.println("This is a string with a \ttab character.");
+        System.out.println();
+        System.out.println("This is a string with a \bbackspace.");
+        System.out.println();
+        System.out.println("This is a string with a\r carriage return.");
+        System.out.println();
+        System.out.println("This is a string with a \"double quote\".");
+        System.out.println();
+        System.out.println("This is a string with a \'single quote\'.");
+        System.out.println();
+        System.out.println("This is a string with a \\backslash.");
+        System.out.println();
+        System.out.println("This is a string with a form feed\f.");
+        System.out.println();
+        System.out.println("This is a string with a null character\0.");*/
+
+
         int[] values0 = {4, 5, 2, 0, 1,
                 3, 0, 3, 4, 3,
                 4, 1, 4, 2, 0,
@@ -103,36 +122,23 @@ public class Start {
         testings.add(test4);
         testings.add(test5);
         testings.add(test6);
-		/*System.out.println(test1.isStartklar());
-		System.out.println();
-		System.out.println(test1.getpBoard());
-		System.out.println(test1.minMovesFull());
 
 
-        System.out.println(testing.getpBoard());
-        System.out.println(testing.minMoves(2,2));
-        System.out.println("IstStartklar");
-        System.out.println(testing.isStartklar());
-        System.out.println("EndConfig");
-        System.out.println(testing.isEndConfig());
-        System.out.println("Strat1");
-        System.out.println(testing.testStrategy01());
-        System.out.println("Strat2");
-        System.out.println(testing.testStrategy02());
-        System.out.println("Strat3");
-        System.out.println(testing.testStrategy03());*/
         for (Testing testing : testings) {
             for (int i = 0; i <= 6; i++) {
                 System.out.println("ToBoard with " + i + " moves possible: " + test0.toBoard(testing.getBoard(), i));
-                System.out.println();
-                /*System.out.println(test0.getpBoard());
+/*                System.out.println();
+                System.out.println(test0.getpBoard());
                 System.out.println(testing.getpBoard());*/
                 System.out.println("-----------------------------------\n");
             }
             System.out.println("---------------------------------------------------------------------\n");
         }
-        //System.out.println(test4.toBoard(test5.getBoard(), 1));
-        /*for (int i = 0; i < 5; i++){
+
+
+
+    /*    System.out.println(test4.toBoard(test5.getBoard(), 1));
+        for (int i = 0; i < 5; i++){
             System.out.println("Number " + i +
                     "\nBoard:\n" + testings.get(i).getpBoard() +
                     "S1:\n" + testings.get(i).getpBoard().getS1().getComponent() +
@@ -140,8 +146,8 @@ public class Start {
                     "\nS2:\n"  + testings.get(i).getpBoard().getS2().getComponent() +
                     "\nSize: " + testings.get(i).getpBoard().getS2().getSize() +
                     "\n----------------------------------------------------------------\n");
-        }*/
-       /* System.out.println(test4.getpBoard());
+        }
+        System.out.println(test4.getpBoard());
         System.out.println(test4.getpBoard().getS1().getComponent());*/
 
     }
