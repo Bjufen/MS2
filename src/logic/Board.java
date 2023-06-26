@@ -120,7 +120,7 @@ public class Board {
     }
 
     //DANGER(Maybe)
-    public void setMidGameComponents() {
+   /* public void setMidGameComponents() {
         Set<Field> usedFields = new HashSet<>();
         for (Field[] row : getBoard()) {
             for (Field field : row) {
@@ -160,6 +160,55 @@ public class Board {
                 }
             }
         }
+        setPlayerComponents();
+    }*/
+
+    public void setMidGameComponents(){
+        Set<Field> usedFields = new HashSet<>();
+        for (Field[] row : getBoard()){
+            for (Field field : row){
+                if(usedFields.contains(field))
+                    continue;
+                Component component = new Component(field);
+                usedFields.add(field);
+                boolean componentFull = false;
+                while (!componentFull){
+                    componentFull = true;
+                    Set<Field> newFields = new HashSet<>();
+                    for (Field field1 : component.getComponent()){
+                        for (Field neighbour : getAllNeighbors(field1)){
+                            if(neighbour.getColor() == field1.getColor()){
+                                newFields.add(neighbour);
+                                neighbour.setComponent(component);
+                                usedFields.add(neighbour);
+                            }
+                        }
+                    }
+                    if (!newFields.isEmpty()){
+                        component.getComponent().addAll(newFields);
+                    }
+                    for (Field field1 : component.getComponent()){
+                        for (Field neighbour : getAllNeighbors(field1)){
+                            if(neighbour.getColor() == field1.getColor()){
+                                if (!component.getComponent().contains(neighbour))
+                                    componentFull = false;
+                            }
+                        }
+                    }
+                }
+                components.add(component);
+            }
+        }
+        /*for (Component component : components){
+            for (Field field : component.getComponent()){
+                if ((field.getCol() == 0) && (field.getRow() == board.length - 1)){
+                    System.out.println("-----------------------------------------------------\n" +
+                            "S1 COMPONENT:" +
+                            "\n" + component + "\n" +
+                            "-----------------------------------------------------\n");
+                }
+            }
+        }*/
         setPlayerComponents();
     }
 

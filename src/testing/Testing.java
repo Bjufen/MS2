@@ -86,9 +86,9 @@ public class Testing {
 
     public boolean recursiveStep(Board ourBoard, Board anotherBoard, int moves, boolean s1Turn) {
         boolean isIdentical = recursiveHelper(ourBoard, anotherBoard);
-        System.out.println("-------------------------------------------------------------");
+       /* System.out.println("-------------------------------------------------------------");
         System.out.println("Moves left: " + moves + "\nourBoard:\n" + ourBoard + "\nanotherBoard:\n" + anotherBoard);
-        System.out.println("Isidentical: " + isIdentical);
+        System.out.println("Isidentical: " + isIdentical);*/
         if ((moves == 0 || (isIdentical)))
             return isIdentical;
 
@@ -106,8 +106,8 @@ public class Testing {
             copyBoard = new Board(ourBoard.getCopyOfBoard());
             if(s1Turn) {
                 copyBoard2 = new Board(copyBoard.makeTurnToBoard(copyBoard.getS1(),i));
-                System.out.println("CopyBoard:\n" + copyBoard);
-                System.out.println("CopyBoard2:\n" + copyBoard2);
+                /*System.out.println("CopyBoard:\n" + copyBoard);
+                System.out.println("CopyBoard2:\n" + copyBoard2);*/
             }
             else{
                 copyBoard2 = new Board(copyBoard.makeTurnToBoard(copyBoard.getS2(),i));
@@ -147,6 +147,37 @@ public class Testing {
         return moves;
     }
 
+    public int minMovess(int row, int col){
+        int[] minMoves = new int[SCHLECHTE_AUFGABENSTELLUNG_WEIL.length + 1];
+        SubBoard originalBoard = new SubBoard(pBoard.getCopyOfBoard(), SCHLECHTE_AUFGABENSTELLUNG_WEIL);
+        int currentColour = originalBoard.getS1().getColor();
+        minMoves[0] = Integer.MAX_VALUE;
+        minMoves[currentColour] = Integer.MAX_VALUE;
+        for (int i = 0; i < minMoves.length; i++){
+            if(i == currentColour)
+                continue;
+            int moves = 0;
+            int currentColor = i;
+            Field[][] testingBoard = pBoard.getCopyOfBoard();
+            SubBoard temp = new SubBoard(testingBoard, SCHLECHTE_AUFGABENSTELLUNG_WEIL);
+            Component needle = temp.getBoard()[row][col].getComponent();
+            while (temp.getComponents().contains(needle)) {
+                if (currentColor == getColors().length)
+                    currentColor = 1;
+                else currentColor++;
+                temp.makeTurnSinglePlayer(temp.getS1(), currentColor);
+                moves++;
+            }
+            minMoves[i] = moves;
+        }
+        int minValue = minMoves[1];
+        for (int i = 2; i < minMoves.length; i++){
+            if (minMoves[i] < minValue)
+                minValue = minMoves[i];
+        }
+        return minValue;
+    }
+
 
     public int minMovesFull() {
         SubBoard temp = new SubBoard(pBoard.getCopyOfBoard(), SCHLECHTE_AUFGABENSTELLUNG_WEIL);
@@ -159,8 +190,38 @@ public class Testing {
             temp.makeTurnSinglePlayer(temp.getS1(), currentColor);
             moves++;
         }
-        Testing test = new Testing(temp.getBoard());
+       // Testing test = new Testing(temp.getBoard());
         return moves;
+    }
+
+
+    public int minMovesFulll(){
+        int[] minMoves = new int[SCHLECHTE_AUFGABENSTELLUNG_WEIL.length + 1];
+        SubBoard originalBoard = new SubBoard(pBoard.getCopyOfBoard(), SCHLECHTE_AUFGABENSTELLUNG_WEIL);
+        int currentColour = originalBoard.getS1().getColor();
+        minMoves[0] = Integer.MAX_VALUE;
+        minMoves[currentColour] = Integer.MAX_VALUE;
+        for (int i = 0; i < minMoves.length; i++){
+            if(i == currentColour)
+                continue;;
+            int moves = 0;
+            int currentColor = i;
+            SubBoard temp = new SubBoard(originalBoard.getCopyOfBoard(), SCHLECHTE_AUFGABENSTELLUNG_WEIL);
+            while (temp.getS1().getSize() != (board.length * board[0].length)) {
+                if (currentColor == getColors().length)
+                    currentColor = 1;
+                else currentColor++;
+                temp.makeTurnSinglePlayer(temp.getS1(), currentColor);
+                moves++;
+            }
+            minMoves[i] = moves;
+        }
+        int minValue = minMoves[1];
+        for (int i = 2; i < minMoves.length; i++){
+            if (minMoves[i] < minValue)
+                minValue = minMoves[i];
+        }
+        return minValue;
     }
 
     //Returns true if every cell of every cell's neighbour is a different color

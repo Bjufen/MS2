@@ -17,38 +17,44 @@ public class Start {
     public static void main(String[] args) {
         //Frame frame = new Frame();
         int[] values0 = {4, 5, 2, 0, 1,
-                         3, 0, 3, 4, 3,
-                         4, 1, 4, 2, 0,
-                         2, 4, 3, 1, 4,
-                         0, 5, 2, 4, 0};
+                3, 0, 3, 4, 3,
+                4, 1, 4, 2, 0,
+                2, 4, 3, 1, 4,
+                0, 5, 2, 4, 0};
 
         int[] values1 = {4, 5, 2, 0, 1,
-                         3, 0, 3, 4, 3,
-                         4, 1, 4, 2, 0,
-                         2, 4, 3, 1, 4,
-                         5, 5, 2, 4, 0};
+                3, 0, 3, 4, 3,
+                4, 1, 4, 2, 0,
+                2, 4, 3, 1, 4,
+                5, 5, 2, 4, 0};
 
         int[] values2 = {4, 5, 2, 0, 3,
-                         3, 0, 3, 4, 3,
-                         4, 1, 4, 2, 0,
-                         2, 4, 3, 1, 4,
-                         5, 5, 2, 4, 0};
+                3, 0, 3, 4, 3,
+                4, 1, 4, 2, 0,
+                2, 4, 3, 1, 4,
+                5, 5, 2, 4, 0};
 
         int[] values3 = {4, 5, 2, 0, 3,
-                         3, 0, 3, 4, 3,
-                         4, 1, 4, 2, 0,
-                         2, 4, 3, 1, 4,
-                         2, 2, 2, 4, 0};
+                3, 0, 3, 4, 3,
+                4, 1, 4, 2, 0,
+                2, 4, 3, 1, 4,
+                2, 2, 2, 4, 0};
 
         int[] values4 = {4, 5, 2, 0, 0,
-                         3, 0, 3, 4, 0,
-                         4, 1, 4, 2, 0,
-                         2, 4, 3, 1, 4,
-                         2, 2, 2, 4, 0};
+                3, 0, 3, 4, 0,
+                4, 1, 4, 2, 0,
+                2, 4, 3, 1, 4,
+                2, 2, 2, 4, 0};
 
         int[] values5 = {4, 5, 2, 0, 0,
-                         3, 0, 3, 4, 0,
-                         4, 1, 4, 2, 0,
+                3, 0, 3, 4, 0,
+                4, 1, 4, 2, 0,
+                3, 4, 3, 1, 4,
+                3, 3, 3, 4, 0};
+
+        int[] values6 = {4, 5, 2, 4, 4,
+                         3, 0, 3, 4, 4,
+                         4, 1, 4, 2, 4,
                          3, 4, 3, 1, 4,
                          3, 3, 3, 4, 0};
 
@@ -58,6 +64,7 @@ public class Start {
         Field[][] board3 = new Field[5][5];
         Field[][] board4 = new Field[5][5];
         Field[][] board5 = new Field[5][5];
+        Field[][] board6 = new Field[5][5];
 
         int index = 0;
 
@@ -69,6 +76,7 @@ public class Start {
                 board3[i][j] = new Field(i, j, values3[index] + 1);
                 board4[i][j] = new Field(i, j, values4[index] + 1);
                 board5[i][j] = new Field(i, j, values5[index] + 1);
+                board6[i][j] = new Field(i,j,values6[index] + 1);
                 index++;
             }
         }
@@ -85,6 +93,7 @@ public class Start {
         Testing test4 = new Testing(board4);
         System.out.println("Board 5");
         Testing test5 = new Testing(board5);
+        Testing test6 = new Testing(board6);
 
         ArrayList<Testing> testings = new ArrayList<>();
         testings.add(test0);
@@ -93,6 +102,7 @@ public class Start {
         testings.add(test3);
         testings.add(test4);
         testings.add(test5);
+        testings.add(test6);
 		/*System.out.println(test1.isStartklar());
 		System.out.println();
 		System.out.println(test1.getpBoard());
@@ -111,15 +121,18 @@ public class Start {
         System.out.println(testing.testStrategy02());
         System.out.println("Strat3");
         System.out.println(testing.testStrategy03());*/
-        /*for (int i = 0; i <= 5; i++) {
-            System.out.println("ToBoard with " + i + " moves possible: " + test0.toBoard(testings.get(i).getBoard(), i));
-            System.out.println();
-            System.out.println(test0.getpBoard());
-            System.out.println(testings.get(i).getpBoard());
+        for (Testing testing : testings) {
+            for (int i = 0; i <= 6; i++) {
+                System.out.println("ToBoard with " + i + " moves possible: " + test0.toBoard(testing.getBoard(), i));
+                System.out.println();
+                /*System.out.println(test0.getpBoard());
+                System.out.println(testing.getpBoard());*/
+                System.out.println("-----------------------------------\n");
+            }
             System.out.println("---------------------------------------------------------------------\n");
-        }*/
+        }
         //System.out.println(test4.toBoard(test5.getBoard(), 1));
-        for (int i = 0; i < 5; i++){
+        /*for (int i = 0; i < 5; i++){
             System.out.println("Number " + i +
                     "\nBoard:\n" + testings.get(i).getpBoard() +
                     "S1:\n" + testings.get(i).getpBoard().getS1().getComponent() +
@@ -127,7 +140,7 @@ public class Start {
                     "\nS2:\n"  + testings.get(i).getpBoard().getS2().getComponent() +
                     "\nSize: " + testings.get(i).getpBoard().getS2().getSize() +
                     "\n----------------------------------------------------------------\n");
-        }
+        }*/
        /* System.out.println(test4.getpBoard());
         System.out.println(test4.getpBoard().getS1().getComponent());*/
 

@@ -162,40 +162,7 @@ public class SubBoard extends Board {
         return occurrence;
     }
 
-    @Override
-    public void setMidGameComponents() {
-        Set<Field> usedFields = new HashSet<>();
-        for (Field[] row : getBoard()) {
-            for (Field field : row) {
-                if (usedFields.contains(field))
-                    continue;
-                Component component = new Component(field);
-                component.setColor(component.getColor() + 1);
-                usedFields.add(field);
-                Set<Field> fields = new HashSet<>(component.getComponent());
-                Set<Field> newFields = new HashSet<>();
-                for (Iterator<Field> iterator = fields.iterator(); iterator.hasNext(); ) {
-                    Field field1 = iterator.next();
-                    for (Field neighbour : getAllNeighbors(field1)) {
-                        if ((neighbour.getColor() != component.getColor()) || (usedFields.contains(neighbour)))
-                            continue;
-                        newFields.add(neighbour);
-                        usedFields.add(neighbour);
-                        neighbour.setComponent(component);
-                    }
-                    fields.addAll(newFields);
-                    newFields.clear();
-                }
-                fields.addAll(newFields);
-                component.setComponent(fields);
-                for (Field field1 : component.getComponent()){
-                    field1.setComponent(component);
-                }
-                getComponents().add(component);
-            }
-        }
-        setPlayerComponents();
-    }
+
 
     @Override
     public Component getS1() {
