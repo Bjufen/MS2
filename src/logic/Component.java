@@ -1,3 +1,4 @@
+//Yusuf Shehadeh, 7395116
 package logic;
 
 import java.util.HashSet;
@@ -55,4 +56,6 @@ public class Component {
     public String toString() {
         return "component=" + component +'}';
     }
+
+
 }

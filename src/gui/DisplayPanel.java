@@ -14,12 +14,10 @@ import java.util.concurrent.TimeUnit;
 
 public class DisplayPanel extends JPanel {
 
-    //Set to false after config?
     private boolean firstStart = false;
     private JPanel eastPanel, westPanel, bottomPanel, topPanel, middlePanel, buttonPanel;
     private JLabel bottomLabel, player1Count, player2Count;
     private Board board;
-    //Convert into arrayList?
     private ButtonDesign_2[] colourButtons;
     private ButtonDesign[][] boardButtons;
     private MenuPanel menuPanel;
@@ -36,40 +34,11 @@ public class DisplayPanel extends JPanel {
         middlePanel = new JPanel() {
             @Override
             public Dimension getPreferredSize() {
-                Dimension size = super.getPreferredSize();
-                int largestDimension = Math.max(size.width, size.height);
+                Dimension size = getParent().getSize();
+                int largestDimension = Math.min(size.width, size.height);
                 return new Dimension(largestDimension, largestDimension);
             }
         };
-      /*  eastPanel.setBackground(new Color(190,190,190));
-        westPanel.setBackground(new Color(190,190,190));
-        bottomPanel.setBackground(new Color(190,190,190));
-        topPanel.setBackground(new Color(190,190,190));*/
-        /*this.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                int keyCode = e.getKeyCode();
-                if (keyCode == KeyEvent.VK_1) {
-                    System.out.println("1 key pressed");
-                } else if (keyCode == KeyEvent.VK_2) {
-                    System.out.println("2 key pressed");
-                } else if (keyCode == KeyEvent.VK_3) {
-                    System.out.println("3 key pressed");
-                } else if (keyCode == KeyEvent.VK_4) {
-                    System.out.println("4 key pressed");
-                } else if (keyCode == KeyEvent.VK_5) {
-                    System.out.println("5 key pressed");
-                } else if (keyCode == KeyEvent.VK_6) {
-                    System.out.println("6 key pressed");
-                } else if (keyCode == KeyEvent.VK_7) {
-                    System.out.println("7 key pressed");
-                } else if (keyCode == KeyEvent.VK_8) {
-                    System.out.println("8 key pressed");
-                } else if (keyCode == KeyEvent.VK_9) {
-                    System.out.println("9 key pressed");
-                }
-            }
-        });*/
     }
 
 
@@ -116,8 +85,8 @@ public class DisplayPanel extends JPanel {
         middlePanel = new JPanel() {
             @Override
             public Dimension getPreferredSize() {
-                Dimension size = super.getPreferredSize();
-                int largestDimension = Math.max(size.width, size.height);
+                Dimension size = getParent().getSize();
+                int largestDimension = Math.min(size.width, size.height);
                 return new Dimension(largestDimension, largestDimension);
             }
         };
@@ -178,15 +147,9 @@ public class DisplayPanel extends JPanel {
             CompletableFuture.runAsync(() -> {
                 try {
                     TimeUnit.SECONDS.sleep(1);
-                } catch (InterruptedException ex) {
-                    ex.printStackTrace();
+                } catch (InterruptedException ignored) {
                 }
             }).thenRun(this::s2Move);
-            System.out.println("Button clicked" +
-                    "\nRow: " + field.getRow() +
-                    "\nColumn: " + field.getCol() +
-                    "\nColour: " + board.getColors()[field.getColor()].getRed() + "," + board.getColors()[field.getColor()].getGreen() + "," + board.getColors()[field.getColor()].getBlue() +
-                    "\nColourNumber: " + (field.getColor() + 1) + "\n");
 
         });
         middlePanel.add(button);
@@ -204,9 +167,6 @@ public class DisplayPanel extends JPanel {
         setEnabledPlayercolours(true);
         board.makeTurnSinglePlayer(board.getS1(), color);
         reloadBoard();
-
-        System.out.println("Colours on Board: " + java.util.Arrays.toString(getBoard().getAllColorsBoard()));
-        System.out.println("GetColors: " + java.util.Arrays.toString(getBoard().getColors()));
         reloadBottomPanel();
         setEnabledPlayercolours(false);
         reloadTopPanel();
@@ -215,8 +175,8 @@ public class DisplayPanel extends JPanel {
     }
 
     public void s2Move() {
-        setEnabledGame(true);
         if (menuPanel.isGameStarted()) {
+            setEnabledGame(true);
             setEnabledPlayercolours(true);
             board.makeTurnSinglePlayer(board.getS2(), board.strategy(getStrategy()));
             reloadBoard();
@@ -255,25 +215,19 @@ public class DisplayPanel extends JPanel {
 
     public void reloadBottomPanel() {
         colourButtons = new ButtonDesign_2[board.getColors().length];
-        System.out.println("ColourButtons: " + java.util.Arrays.toString(colourButtons));
         buttonPanel.removeAll();
         for (int i = 0, colourButtonsLength = colourButtons.length; i < colourButtonsLength; i++) {
             ButtonDesign_2 button;
             button = new ButtonDesign_2(board.getColors()[i], i + 1);
             buttonPanel.add(button);
             colourButtons[i] = button;
-            System.out.println("ColourButtons: " + java.util.Arrays.toString(colourButtons));
             ButtonDesign_2 finalButton = button;
             button.addActionListener(e -> {
-                System.out.println("BottomPanelButton Clicked" +
-                        "\nColour: " + finalButton.getBackground().getRed() + "," + finalButton.getBackground().getGreen() + "," + finalButton.getBackground().getBlue() +
-                        "\nNumber: " + finalButton.getNumber() + "\n");
                 s1Move(finalButton.getNumber() - 1);
                 CompletableFuture.runAsync(() -> {
                     try {
                         TimeUnit.SECONDS.sleep(1);
-                    } catch (InterruptedException ex) {
-                        ex.printStackTrace();
+                    } catch (InterruptedException ignored) {
                     }
                 }).thenRun(this::s2Move);
             });
@@ -307,15 +261,11 @@ public class DisplayPanel extends JPanel {
             buttonPanel.add(button);
             colourButtons[i] = button;
             button.addActionListener(e -> {
-                System.out.println("BottomPanelButton Clicked" +
-                        "\nColour: " + button.getBackground().getRed() + "," + button.getBackground().getGreen() + "," + button.getBackground().getBlue() +
-                        "\nNumber: " + button.getNumber());
                 s1Move(button.getNumber() - 1);
                 CompletableFuture.runAsync(() -> {
                     try {
                         TimeUnit.SECONDS.sleep(1);
-                    } catch (InterruptedException ex) {
-                        ex.printStackTrace();
+                    } catch (InterruptedException ignored) {
                     }
                 }).thenRun(this::s2Move);
             });
@@ -389,8 +339,7 @@ public class DisplayPanel extends JPanel {
                             CompletableFuture.runAsync(() -> {
                                 try {
                                     TimeUnit.SECONDS.sleep(1);
-                                } catch (InterruptedException ex) {
-                                    ex.printStackTrace();
+                                } catch (InterruptedException ignored) {
                                 }
                             }).thenRun(() -> {
                                 s2Move();
@@ -410,8 +359,7 @@ public class DisplayPanel extends JPanel {
                             CompletableFuture.runAsync(() -> {
                                 try {
                                     TimeUnit.SECONDS.sleep(1);
-                                } catch (InterruptedException ex) {
-                                    ex.printStackTrace();
+                                } catch (InterruptedException ignored) {
                                 }
                             }).thenRun(() -> {
                                 s2Move();

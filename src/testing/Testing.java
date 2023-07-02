@@ -43,10 +43,7 @@ public class Testing {
         return cornersDifferent();
     }
 
-    /*
-     * Was wenn es nur noch zwei Farben aufm Brett, aber die nicht alle zu s1 oder s2 gehören?
-     *
-     * */
+
     public boolean isEndConfig() {
         return pBoard.getAllColorsBoard().length <= 2 && (this.getpBoard().getS1().getSize() + this.getpBoard().getS2().getSize()) == (board.length * board[0].length);
     }
@@ -73,31 +70,14 @@ public class Testing {
         if (this.getBoard()[0].length != anotherBoard[0].length)
             return false;
         Board anotherField = new Board(anotherBoard);
-        /*for (int i = 0; i < anotherBoard.length; i++) {
-            for (int j = 0; j < anotherBoard[0].length; j++) {
-                if (!(anotherField.getS1().getComponent().contains(getBoard()[i][j]) || anotherField.getS2().getComponent().contains(getBoard()[i][j]))) {
-                    if (anotherBoard[i][j].getColor() != getBoard()[i][j].getColor())
-                        return false;
-                }
-            }
-        }*/
         return recursiveStep(getpBoard(), anotherField, moves, true);
     }
 
     public boolean recursiveStep(Board ourBoard, Board anotherBoard, int moves, boolean s1Turn) {
         boolean isIdentical = recursiveHelper(ourBoard, anotherBoard);
-       /* System.out.println("-------------------------------------------------------------");
-        System.out.println("Moves left: " + moves + "\nourBoard:\n" + ourBoard + "\nanotherBoard:\n" + anotherBoard);
-        System.out.println("Isidentical: " + isIdentical);*/
         if ((moves == 0 || (isIdentical)))
             return isIdentical;
 
-       /* int ourBoardS1Size = ourBoard.getS1().getSize();
-        int ourBoardS2Size = ourBoard.getS2().getSize();
-        int anotherBoardS1Size = anotherBoard.getS1().getSize();
-        int anotherBoardS2Size = anotherBoard.getS2().getSize();
-
-        if ((ourBoardS1Size > anotherBoardS1Size) || (ourBoardS2Size > anotherBoardS2Size)) return false;*/
         Board copyBoard;
         for (int i = 1; i < 7; i++) {
             Board copyBoard2;
@@ -106,8 +86,6 @@ public class Testing {
             copyBoard = new Board(ourBoard.getCopyOfBoard());
             if(s1Turn) {
                 copyBoard2 = new Board(copyBoard.makeTurnToBoard(copyBoard.getS1(),i));
-                /*System.out.println("CopyBoard:\n" + copyBoard);
-                System.out.println("CopyBoard2:\n" + copyBoard2);*/
             }
             else{
                 copyBoard2 = new Board(copyBoard.makeTurnToBoard(copyBoard.getS2(),i));
@@ -130,24 +108,7 @@ public class Testing {
         return true;
     }
 
-    public int minMoves(int row, int col) {
-        Field[][] testingBoard = pBoard.getCopyOfBoard();
-        SubBoard temp = new SubBoard(testingBoard, SCHLECHTE_AUFGABENSTELLUNG_WEIL);
-        Component needle = temp.getBoard()[row][col].getComponent();
-        int currentColor = temp.getS1().getColor();
-        int moves = 0;
-        while (temp.getComponents().contains(needle)) {
-            if (currentColor == getColors().length)
-                currentColor = 1;
-            else currentColor++;
-            temp.makeTurnSinglePlayer(temp.getS1(), currentColor);
-            moves++;
-        }
-        System.out.println(temp);
-        return moves;
-    }
-
-    public int minMovess(int row, int col){
+public int minMoves(int row, int col){
         int[] minMoves = new int[SCHLECHTE_AUFGABENSTELLUNG_WEIL.length + 1];
         SubBoard originalBoard = new SubBoard(pBoard.getCopyOfBoard(), SCHLECHTE_AUFGABENSTELLUNG_WEIL);
         int currentColour = originalBoard.getS1().getColor();
@@ -179,23 +140,7 @@ public class Testing {
     }
 
 
-    public int minMovesFull() {
-        SubBoard temp = new SubBoard(pBoard.getCopyOfBoard(), SCHLECHTE_AUFGABENSTELLUNG_WEIL);
-        int currentColor = temp.getS1().getColor();
-        int moves = 0;
-        while (temp.getS1().getSize() != (board.length * board[0].length)) {
-            if (currentColor == getColors().length)
-                currentColor = 1;
-            else currentColor++;
-            temp.makeTurnSinglePlayer(temp.getS1(), currentColor);
-            moves++;
-        }
-       // Testing test = new Testing(temp.getBoard());
-        return moves;
-    }
-
-
-    public int minMovesFulll(){
+    public int minMovesFull(){
         int[] minMoves = new int[SCHLECHTE_AUFGABENSTELLUNG_WEIL.length + 1];
         SubBoard originalBoard = new SubBoard(pBoard.getCopyOfBoard(), SCHLECHTE_AUFGABENSTELLUNG_WEIL);
         int currentColour = originalBoard.getS1().getColor();

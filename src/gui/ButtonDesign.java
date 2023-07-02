@@ -1,3 +1,4 @@
+//Yusuf Shehadeh, 7395116
 package gui;
 
 import javax.swing.*;
@@ -7,18 +8,24 @@ public class ButtonDesign extends JButton {
     Color colour;
     public ButtonDesign(String text) {
         super(text);
-/*        this.setFont(new Font("Times New Roman", Font.BOLD, 14));
-        this.setBackground(Color.GREEN);
-        this.setForeground(Color.BLACK);*/
+        this.setContentAreaFilled(false); // Set content area filled to false
+        this.setBorderPainted(false); // Set border painted to false
+        this.setOpaque(true); // Set opaque to true
     }
 
     public ButtonDesign(){
         super();
+        this.setContentAreaFilled(false); // Set content area filled to false
+        this.setBorderPainted(false); // Set border painted to false
+        this.setOpaque(true); // Set opaque to true
     }
 
     public ButtonDesign(Color colour){
         this.setBackground(colour);
         this.colour = colour;
+        this.setContentAreaFilled(false); // Set content area filled to false
+        this.setBorderPainted(false); // Set border painted to false
+        this.setOpaque(true); // Set opaque to true
 
     }
 
@@ -29,7 +36,7 @@ public class ButtonDesign extends JButton {
 
     @Override
     public Dimension getPreferredSize() {
-        Dimension size = super.getPreferredSize();
+        Dimension size = getParent().getSize();
         int largestDimension = Math.max(size.width, size.height);
         return new Dimension(largestDimension, largestDimension);
     }

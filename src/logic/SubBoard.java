@@ -1,3 +1,4 @@
+//Yusuf Shehadeh, 7395116
 package logic;
 
 import java.util.HashSet;
@@ -59,24 +60,6 @@ public class SubBoard extends Board {
     }
 
 
-    @Override
-    public int[] copyExcluding(int[] original, int excludeValue1, int excludeValue2) {
-        int[] copy = new int[original.length - 2];  // Create a new array that's two elements shorter
-        int j = 0;
-        for (int i = 0; i < original.length; i++) {
-            // Skip over the values that we're excluding
-            if (original[i] == excludeValue1 || original[i] == excludeValue2) {
-                continue;
-            }
-            // Copy over the element
-            copy[j] = original[i];
-            j++;
-        }
-        return copy;
-    }
-
-
-
     public int strategies(int strategy, Component player) {
         int[] availableColours = copyExcluding(getColorValues(), getBoard()[getBoard().length - 1][0].getColor(), getBoard()[0][getBoard()[0].length - 1].getColor());
         int bestColour = availableColours[0];
@@ -130,24 +113,6 @@ public class SubBoard extends Board {
     public int[] getColorValues() {
         return colours;
     }
-
-    /**
-     * @param player
-     * @param color
-     * @return
-     */
-    @Override
-/*    public int getOccurences(Component player, int color) {
-        Set<Component> playerNeighbours = new HashSet<>(getAllNeighboringComponents(player));
-        int[] occurrence = new int[getaColors()];
-        System.out.println(java.util.Arrays.toString(occurrence));
-        for (Component neighbour : playerNeighbours){
-
-            occurrence[neighbour.getColor()]++;
-            System.out.println(java.util.Arrays.toString(occurrence));
-        }
-        return occurrence[color];
-    }*/
 
     public int getOccurences(Component player, int color) {
         Set<Component> playerNeighbours = new HashSet<>(getAllNeighboringComponents(player));

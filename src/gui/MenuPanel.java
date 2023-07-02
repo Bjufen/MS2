@@ -58,7 +58,7 @@ public class MenuPanel extends JPanel {
                 Have Fun!\s
                 """);
         this.displayPanel = displayPanel;
-        this.setPreferredSize(new Dimension(150, getHeight()));
+        this.setPreferredSize(new Dimension(200, getHeight()));
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         addTimerPanel();
@@ -165,11 +165,6 @@ public class MenuPanel extends JPanel {
                     startStop.setText("Stop");
                     playPause.setEnabled(true);
                     displayPanel.start((int) colours.getSelectedItem(), (int) rows.getSelectedItem(), (int) cols.getSelectedItem());
-                    System.out.println("Starting Player: " + getStarter() +
-                            "\n#Colours: " + colours.getSelectedItem() +
-                            "\n#Rows: " + rows.getSelectedItem() +
-                            "\n#Columns: " + cols.getSelectedItem() +
-                            "\nChosen Strategy: " + getStrategy() + "\n");
                 } else {
                     playPause.setText("Play");
                     startStop.setText("Start");
@@ -197,13 +192,11 @@ public class MenuPanel extends JPanel {
                         CompletableFuture.runAsync(() -> {
                             try {
                                 TimeUnit.SECONDS.sleep(1);
-                            } catch (InterruptedException ex) {
-                                ex.printStackTrace();
+                            } catch (InterruptedException ignored) {
                             }
                         }).thenRun(() -> {
-                            displayPanel.s2Move();;
+                            displayPanel.s2Move();
                         });
-                        System.out.println("Player 2 Starting");
                         setS1Started(false);
                     }
                     setGameStarted(true);

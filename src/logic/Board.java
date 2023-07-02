@@ -1,3 +1,4 @@
+//Yusuf Shehadeh, 7395116
 package logic;
 
 
@@ -101,7 +102,6 @@ public class Board {
     private boolean checkLastTwoMoves(ArrayList<Integer> list) {
         if (list.size() >= 3) { // Make sure the list has at least 2 elements
             int lastIndex = list.size() - 1;
-            System.out.println(list.get(lastIndex) + " " + list.get(lastIndex - 2));
             return list.get(lastIndex).equals(list.get(lastIndex - 2));
         } else {
             return false;
@@ -119,49 +119,6 @@ public class Board {
         setStartComponents();
     }
 
-    //DANGER(Maybe)
-   /* public void setMidGameComponents() {
-        Set<Field> usedFields = new HashSet<>();
-        for (Field[] row : getBoard()) {
-            for (Field field : row) {
-                if (usedFields.contains(field))
-                    continue;
-                Component component = new Component(field);
-                usedFields.add(field);
-                Set<Field> fields = new HashSet<>(component.getComponent());
-                Set<Field> newFields = new HashSet<>();
-                for (Iterator<Field> iterator = fields.iterator(); iterator.hasNext(); ) {
-                    Field field1 = iterator.next();
-                    for (Field neighbour : getAllNeighbors(field1)) {
-                        if ((neighbour.getColor() != component.getColor()) || (usedFields.contains(neighbour)))
-                            continue;
-                        newFields.add(neighbour);
-                        usedFields.add(neighbour);
-                        neighbour.setComponent(component);
-                    }
-                    fields.addAll(newFields);
-                    newFields.clear();
-                }
-                fields.addAll(newFields);
-                component.setComponent(fields);
-                for (Field field1 : component.getComponent()) {
-                    field1.setComponent(component);
-                }
-                components.add(component);
-            }
-        }
-        for (Component component : components){
-            for (Field field : component.getComponent()){
-                if ((field.getCol() == 0) && (field.getRow() == board.length - 1)){
-                    System.out.println("-----------------------------------------------------\n" +
-                            "S1 COMPONENT:" +
-                            "\n" + component + "\n" +
-                            "-----------------------------------------------------\n");
-                }
-            }
-        }
-        setPlayerComponents();
-    }*/
 
     public void setMidGameComponents(){
         Set<Field> usedFields = new HashSet<>();
@@ -199,40 +156,10 @@ public class Board {
                 components.add(component);
             }
         }
-        /*for (Component component : components){
-            for (Field field : component.getComponent()){
-                if ((field.getCol() == 0) && (field.getRow() == board.length - 1)){
-                    System.out.println("-----------------------------------------------------\n" +
-                            "S1 COMPONENT:" +
-                            "\n" + component + "\n" +
-                            "-----------------------------------------------------\n");
-                }
-            }
-        }*/
         setPlayerComponents();
     }
 
 
-    /*    private void setPlayerComponents() {
-            for (Component component : components) {
-                if (component.getComponent().contains(getBoard()[getBoard().length - 1][0])) {
-                    s1 = component;
-                    components.remove(component);
-                    for(Field field : s1.getComponent()){
-                        field.setComponent(s1);
-                    }
-                    continue;
-                }
-                if (component.getComponent().contains(getBoard()[0][getBoard()[0].length - 1])) {
-                    s2 = component;
-                    components.remove(component);
-                    for(Field field : s2.getComponent()){
-                        field.setComponent(s2);
-                    }
-                    continue;
-                }
-            }
-        }*/
     public void setPlayerComponents() {
         Iterator<Component> componentIterator = components.iterator();
 
@@ -335,6 +262,7 @@ public class Board {
         for (Component neighbour : playerNeighbours) {
             occurrence[neighbour.getColor()]++;
         }
+
         return occurrence[color];
     }
 
@@ -545,15 +473,6 @@ public class Board {
         else return newColor;
     }
 
-   /* private int strategyHelper(int bestColor, int newColor, Component s) {
-        int bestC = predictSizeChange(s, bestColor);
-        int newC = predictSizeChange(s, newColor);
-        if (bestC == newC) {
-            return Math.min(bestColor, newColor);
-        }
-        return Math.max(bestC, newC);
-    }*/
-
     public int[] copyExcluding(int[] original, int excludeValue1, int excludeValue2) {
         int[] copy = new int[original.length - 2];  // Create a new array that's two elements shorter
         int j = 0;
@@ -653,7 +572,6 @@ public class Board {
     }
 
     public boolean isDone() {
-        System.out.println("Sizes:");
         boolean s1 = checkLastTwoMoves(s1Size);
         boolean s2 = checkLastTwoMoves(s2Size);
         if ((checkLastTwoMoves(s1Size)) && (checkLastTwoMoves(s2Size)))
